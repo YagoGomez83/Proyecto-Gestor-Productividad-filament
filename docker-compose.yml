@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+    php:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: php_app
+        depends_on:
+            - postgres
+        networks:
+            - mynetwork
+        volumes:
+            - ./:/var/www/html # Monta el proyecto local en el contenedor
+            - ./config/apache/default-ssl.conf:/etc/apache2/sites-available/default-ssl.conf
+        ports:
+            - "8082:80" # Exposición de Apache en HTTP
+            - "443:443" # Exposición de Apache en HTTPS
+            - "8000:8000" # Para el servidor Laravel
+
+    postgres:
+        image: postgres:13
+        container_name: postgres_db
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: root
+            POSTGRES_DB: sismo_app
+        networks:
+            - mynetwork
+        volumes:
+            - db_data:/var/lib/postgresql/data # Volumen persistente para los datos de PostgreSQL
+        ports:
+            - "5432:5432" # Exposición de PostgreSQL para conexiones externas
+
+    adminer:
+        image: adminer
+        container_name: adminer
+        ports:
+            - "8083:8080" # Exposición de Adminer para acceso a la base de datos
+        networks:
+            - mynetwork
+
+networks:
+    mynetwork:
+        driver: bridge
+
+volumes:
+    db_data: # Volumen persistente para PostgreSQL
