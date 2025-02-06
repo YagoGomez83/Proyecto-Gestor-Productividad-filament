@@ -16,8 +16,10 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class RegionalUnitResource extends Resource
 {
     protected static ?string $model = RegionalUnit::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Policial';
+    protected static ?string $navigationLabel = 'Unidades Regionales';
+    protected static ?string $navigationIcon = 'heroicon-o-building-library';
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
@@ -25,9 +27,11 @@ class RegionalUnitResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()
+                    ->label('Nombre')
                     ->maxLength(255),
                 Forms\Components\Select::make('center_id')
                     ->relationship('center', 'name')
+                    ->label('Centro')
                     ->required(),
             ]);
     }
@@ -37,16 +41,20 @@ class RegionalUnitResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('nombre'),
                 Tables\Columns\TextColumn::make('center.name')
                     ->numeric()
+                    ->label('Centro')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
+                    ->label('Creado')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
+                    ->label('Actualizado')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -55,6 +63,8 @@ class RegionalUnitResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

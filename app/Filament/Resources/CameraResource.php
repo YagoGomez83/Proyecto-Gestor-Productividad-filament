@@ -29,19 +29,24 @@ class CameraResource extends Resource
 {
     protected static ?string $model = Camera::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    protected static ?string $navigationGroup = 'IGE';
+    protected static ?string $navigationLabel = 'Cámaras';
+    protected static ?string $navigationIcon = 'heroicon-o-video-camera';
+    protected static ?int $navigationSort = 1;
     public static function form(Forms\Form $form): Forms\Form
     {
         return $form->schema([
             // Otros campos
             TextInput::make('identifier')
+                ->label('Identificador')
                 ->required(),
             Select::make('city_id')
                 ->relationship('city', 'name')
+                ->label('Ciudad')
                 ->required(),
             Select::make('police_station_id')
                 ->relationship('policeStation', 'name')
+                ->label('Comisaría')
                 ->required(),
 
             Fieldset::make('Ubicación')
@@ -49,13 +54,22 @@ class CameraResource extends Resource
                     TextInput::make('address')
                         ->label('Dirección')
                         ->required()
+                        ->reactive(),
+
+
+
+                    Hidden::make('latitude')
                         ->reactive()
-                        ->disabled(),
+                        ->default(fn($record) => $record?->location?->latitude),
 
+                    Hidden::make('longitude')
+                        ->reactive()
+                        ->default(fn($record) => $record?->location?->longitude),
 
-                    Hidden::make('latitude')->reactive()->id('latitude'),
-                    Hidden::make('longitude')->reactive()->id('longitude'),
-                    Hidden::make('address')->reactive()->id('address'),
+                    Hidden::make('address')
+                        ->reactive()
+                        ->default(fn($record) => $record?->location?->address),
+
 
                     \Filament\Forms\Components\ViewField::make('map')
                         ->view('filament.forms.leaflet-map')

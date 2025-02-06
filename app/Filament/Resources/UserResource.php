@@ -37,7 +37,10 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->dehydrateStateUsing(fn($state) => bcrypt($state))
+                    ->dehydrated(fn($state) => filled($state))
+                    ->label('Contraseña'),
                 Forms\Components\TextInput::make('phone_number')
                     ->tel()
                     ->maxLength(255),
@@ -92,6 +95,13 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('group_id')
                     ->numeric()
                     ->sortable(),
+                // Agregar los roles a la tabla
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->label('Roles')
+                    ->listWithLineBreaks(), // Muestra múltiples roles en líneas separadas
+
+
+
 
             ])
             ->filters([

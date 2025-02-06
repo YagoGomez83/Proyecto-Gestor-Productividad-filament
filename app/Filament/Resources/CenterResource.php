@@ -16,8 +16,10 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CenterResource extends Resource
 {
     protected static ?string $model = Center::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'IGE';
+    protected static ?string $navigationLabel = 'Centros';
+    protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
@@ -25,6 +27,7 @@ class CenterResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()
+                    ->label('Nombre')
                     ->maxLength(255),
             ]);
     }
@@ -34,7 +37,8 @@ class CenterResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Centros'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -49,10 +53,13 @@ class CenterResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+
                 ]),
             ]);
     }

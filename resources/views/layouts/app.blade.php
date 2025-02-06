@@ -18,6 +18,7 @@
 
     <!-- Scripts -->
     @vite('resources/js/app.js') <!-- Carga de scripts con Vite -->
+
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script> <!-- Leaflet JS -->
     @livewireScripts <!-- Scripts de Livewire -->
     @stack('scripts') <!-- Permite agregar más scripts desde otras vistas -->

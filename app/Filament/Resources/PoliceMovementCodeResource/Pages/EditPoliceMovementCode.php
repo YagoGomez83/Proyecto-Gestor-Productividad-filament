@@ -2,13 +2,27 @@
 
 namespace App\Filament\Resources\PoliceMovementCodeResource\Pages;
 
-use App\Filament\Resources\PoliceMovementCodeResource;
 use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\PoliceMovementCodeResource;
 
 class EditPoliceMovementCode extends EditRecord
 {
     protected static string $resource = PoliceMovementCodeResource::class;
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+
+    protected function afterSave(): void
+    {
+        Notification::make()
+            ->title('Código actualizado')
+            ->success()
+            ->body('El código se ha actualizado correctamente.')
+            ->send();
+    }
 
     protected function getHeaderActions(): array
     {

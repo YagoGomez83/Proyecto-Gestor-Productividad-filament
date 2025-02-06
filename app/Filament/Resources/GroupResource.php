@@ -16,8 +16,10 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class GroupResource extends Resource
 {
     protected static ?string $model = Group::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationLabel = 'Grupos';
+    protected static ?string $navigationGroup = 'IGE';
+    protected static ?int $navigationSort = 4;
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
     public static function form(Form $form): Form
     {
@@ -25,9 +27,11 @@ class GroupResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()
+                    ->label('Nombre')
                     ->maxLength(255),
                 Forms\Components\Select::make('center_id')
                     ->relationship('center', 'name')
+                    ->label('Centro')
                     ->required(),
             ]);
     }
@@ -37,16 +41,21 @@ class GroupResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Nombre'),
                 Tables\Columns\TextColumn::make('center.name')
+                    ->searchable()
                     ->numeric()
+                    ->label('Centro')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
+                    ->label('Creado')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
+                    ->label('Actualizado')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -55,6 +64,8 @@ class GroupResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

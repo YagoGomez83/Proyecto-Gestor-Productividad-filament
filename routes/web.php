@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
+// Route::view('/', 'public.index')->name('welcome');
+
 // Route::get('/admin', function () {
 //     $user = auth()->user();
 
@@ -15,3 +17,6 @@ use Illuminate\Support\Facades\Route;
 
 //     return abort(403);
 // })->middleware('auth')->name('dashboard');
+Route::get('/', function () {
+    return redirect('/operator');
+});

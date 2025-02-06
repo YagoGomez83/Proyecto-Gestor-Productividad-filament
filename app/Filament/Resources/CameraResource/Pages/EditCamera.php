@@ -4,12 +4,14 @@ namespace App\Filament\Resources\CameraResource\Pages;
 
 use Filament\Actions;
 use App\Models\Location;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\CameraResource;
 
 class EditCamera extends EditRecord
 {
     protected static string $resource = CameraResource::class;
+
     public $latitude;
     public $longitude;
     public $address;
@@ -25,18 +27,31 @@ class EditCamera extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        if (isset($data['location_id'])) {
+        if (!empty($data['location_id'])) {
             $location = Location::find($data['location_id']);
 
             if ($location) {
-                $this->latitude = $location->latitude;
-                $this->longitude = $location->longitude;
-                $this->address = $location->address;
+                $data['latitude'] = $location->latitude;
+                $data['longitude'] = $location->longitude;
+                $data['address'] = $location->address;
             }
         }
 
         return $data;
     }
+
+    protected function afterFill(): void
+    {
+        if ($this->record->location) {
+            $this->dispatch(
+                'setLocation',
+                (float) $this->record->location->latitude,
+                (float) $this->record->location->longitude,
+                $this->record->location->address
+            );
+        }
+    }
+
     protected function mutateFormDataBeforeSave(array $data): array
     {
         if ($this->latitude && $this->longitude && $this->address) {
@@ -60,5 +75,19 @@ class EditCamera extends EditRecord
         return [
             Actions\DeleteAction::make(),
         ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+
+    protected function afterCreate(): void
+    {
+        Notification::make()
+            ->title('Cámara actualizada')
+            ->success()
+            ->body('La cámara se ha actualizado correctamente.')
+            ->send();
     }
 }

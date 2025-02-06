@@ -3,8 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Models\Group;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -33,7 +31,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Insertar el usuario admin
-        DB::table('users')->insert([
+        $admin = User::create([
             'name' => 'admin',
             'last_name' => 'test',
             'email' => 'admin@admin.com',
@@ -44,15 +42,36 @@ class DatabaseSeeder extends Seeder
             'group_id' => '1',
         ]);
 
-        // Insertar roles
+        // Insertar usuario supervisor
+        $supervisor = User::create([
+            'name' => 'supervisor',
+            'last_name' => 'test',
+            'email' => 'supervisor@test.com',
+            'password' => bcrypt('supervisor'),
+            'phone_number' => '9876543210',
+            'address' => '1234 Supervisor St',
+            'city_id' => '1',
+            'group_id' => '1',
+        ]);
+
+        // Insertar usuario operador
+        $operator = User::create([
+            'name' => 'operator',
+            'last_name' => 'test',
+            'email' => 'operator@test.com',
+            'password' => bcrypt('operator'),
+            'phone_number' => '5678901234',
+            'address' => '1234 Operator St',
+            'city_id' => '1',
+            'group_id' => '1',
+        ]);
+
         // Llamar al seeder de roles y permisos
         $this->call(RolesAndPermissionsSeeder::class);
 
-
-        // Obtener el usuario admin recién creado
-        $user = User::where('email', 'admin@admin.com')->first();
-
-        // Asignar el rol de 'coordinator' al usuario admin
-        $user->assignRole('coordinator');
+        // Asignar roles a los usuarios
+        $admin->assignRole('coordinator');
+        $supervisor->assignRole('supervisor');
+        $operator->assignRole('operator');
     }
 }

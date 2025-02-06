@@ -4,6 +4,7 @@ namespace App\Filament\Resources\CameraResource\Pages;
 
 use Livewire\Component;
 use App\Models\Location;
+use Filament\Notifications\Notification;
 use App\Filament\Resources\CameraResource;
 use Filament\Resources\Pages\CreateRecord;
 
@@ -45,5 +46,18 @@ class CreateCamera extends CreateRecord
         }
 
         return $data;
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+    protected function afterCreate(): void
+    {
+        Notification::make()
+            ->title('Camara creada')
+            ->success()
+            ->body('La cámara se ha creado correctamente.')
+            ->send();
     }
 }
