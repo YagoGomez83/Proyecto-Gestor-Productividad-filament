@@ -16,37 +16,92 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ServiceResource extends Resource
 {
     protected static ?string $model = Service::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationLabel = "Servicios";
+    protected static ?string $navigationGroup = 'IGE';
+    protected static ?int $navigationSort = 4;
+    protected static ?string $navigationIcon = 'heroicon-s-pencil-square';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\DatePicker::make('service_date')
+                    ->label('Fecha')
                     ->required(),
-                Forms\Components\TextInput::make('service_time')
+                Forms\Components\TimePicker::make('service_time')
+                    ->label('Hora')
                     ->required(),
-                Forms\Components\TextInput::make('user_id')
+                Forms\Components\Select::make('user_id')
+                    ->relationship('user', 'name')
+                    ->label('Usuario')
+                    ->preload()
+                    ->searchable()
+                    ->required(),
+                Forms\Components\Select::make('group_id')
+                    ->relationship('group', 'name')
+                    ->label('Grupo')
+                    ->preload()
+                    ->searchable()
+                    ->required(),
+                Forms\Components\Select::make('city_id')
+                    ->relationship('city', 'name')
+                    ->label('Ciudad')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Forms\Components\Select::make('camera_id')
+                    ->relationship('camera', 'identifier')
+                    ->label('Cámara')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Forms\Components\Select::make('initial_police_movement_code_id')
+                    ->label('Código de Desplazamiento Inicial')
+                    ->options(\App\Models\PoliceMovementCode::pluck('description', 'id'))
+                    ->searchable()
+                    ->preload()
+                    ->reactive()
+                    ->afterStateUpdated(fn($set) => $set('initial_sub_police_movement_code_id', null)), // Limpiar el subcódigo al cambiar el código
+
+                Forms\Components\Select::make('initial_sub_police_movement_code_id')
+                    ->label('Sub Código Inicial')
+                    ->options(fn($get) => \App\Models\SubPoliceMovementCode::where('police_movement_code_id', $get('initial_police_movement_code_id'))
+                        ->pluck('description', 'id'))
+                    ->searchable()
+                    ->preload()
+                    ->reactive()
+                    ->disabled(fn($get) => !$get('initial_police_movement_code_id')), // Bloquear si no hay código seleccionado
+
+                Forms\Components\Select::make('final_police_movement_code_id')
+                    ->label('Código de Desplazamiento Final')
+                    ->options(\App\Models\PoliceMovementCode::pluck('description', 'id'))
+                    ->searchable()
+                    ->preload()
+                    ->reactive()
+                    ->afterStateUpdated(fn($set) => $set('final_sub_police_movement_code_id', null)),
+
+                Forms\Components\Select::make('final_sub_police_movement_code_id')
+                    ->label('Sub Código Final')
+                    ->options(fn($get, $record) => $record
+                        ? $record->finalSubPoliceMovementCodes()->pluck('sub_police_movement_codes.description', 'sub_police_movement_codes.id') // ✅ Especificar la tabla
+                        : [])
+                    ->default(fn($record) => $record?->final_sub_police_movement_code_id) // Precargar el valor guardado
+                    ->searchable()
+                    ->preload()
+                    ->reactive()
+                    ->disabled(fn($get) => !$get('final_police_movement_code_id')),
+
+
+                Forms\Components\Select::make('status')
+                    ->label('Estado')
+                    ->options([
+                        'preventive' => 'Preventivo',
+                        'reactive' => 'Reactivo',
+                    ])
                     ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('group_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('city_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('initial_police_movement_code_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('final_police_movement_code_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('status')
-                    ->required()
-                    ->maxLength(255)
                     ->default('preventive'),
                 Forms\Components\Textarea::make('description')
+                    ->label('Descripción')
                     ->required()
                     ->columnSpanFull(),
             ]);
@@ -57,22 +112,30 @@ class ServiceResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('service_date')
+                    ->label('Fecha')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('service_time'),
-                Tables\Columns\TextColumn::make('user_id')
+                Tables\Columns\TextColumn::make('service_time')
+                    ->label('Hora')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Usuario')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('group_id')
+                Tables\Columns\TextColumn::make('group.name')
+                    ->label('Grupo')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('city_id')
+                Tables\Columns\TextColumn::make('city.name')
+                    ->label('Ciudad')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('initial_police_movement_code_id')
+                Tables\Columns\TextColumn::make('initialPoliceMovementCode.code')
+                    ->label('Código de desplazamiento inicial')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('final_police_movement_code_id')
+                Tables\Columns\TextColumn::make('finalPoliceMovementCode.code')
+                    ->label('Código de desplazamiento final')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
@@ -91,6 +154,8 @@ class ServiceResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

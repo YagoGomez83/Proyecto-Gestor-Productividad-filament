@@ -12,10 +12,7 @@ services:
             - mynetwork
         volumes:
             - ./:/var/www/html # Monta el proyecto local en el contenedor
-            - ./config/apache/default-ssl.conf:/etc/apache2/sites-available/default-ssl.conf
         ports:
-            - "8082:80" # Exposición de Apache en HTTP
-            - "443:443" # Exposición de Apache en HTTPS
             - "8000:8000" # Para el servidor Laravel
 
     postgres:

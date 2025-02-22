@@ -6,29 +6,29 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Location;
 
+
+
 class LocationPicker extends Component
 {
-    public $address;
     public $latitude;
     public $longitude;
+    public $address;
 
-    protected $rules = [
-        'address' => 'required|string',
-        'latitude' => 'required|numeric',
-        'longitude' => 'required|numeric',
-    ];
+    protected $listeners = ['setLocation'];
 
-    public function save()
+    // Escucha el evento 'setLocation' desde el frontend (JavaScript)
+    public function setLocation($latitude, $longitude, $address)
     {
-        $this->validate();
+        $this->latitude = $latitude;
+        $this->longitude = $longitude;
+        $this->address = $address;
 
-        $location = Location::create([
-            'address' => $this->address,
-            'latitude' => $this->latitude,
-            'longitude' => $this->longitude,
+        // Emitir el evento de actualización al formulario de Filament
+        $this->emit('locationUpdated', [
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'address' => $address,
         ]);
-
-        $this->emit('locationCreated', $location->id);
     }
 
     public function render()

@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\CameraResource\Pages;
 
-use Livewire\Component;
 use App\Models\Location;
+use Illuminate\Support\Facades\Log;
 use Filament\Notifications\Notification;
 use App\Filament\Resources\CameraResource;
 use Filament\Resources\Pages\CreateRecord;
@@ -12,52 +12,60 @@ class CreateCamera extends CreateRecord
 {
     protected static string $resource = CameraResource::class;
 
-    public $latitude;
-    public $longitude;
-    public $address;
+    // public $latitude;
+    // public $longitude;
+    // public $address;
 
-    protected $listeners = ['setLocation'];
+    // protected $listeners = ['setLocation'];
 
-    // Método para capturar la ubicación
-    public function setLocation($latitude, $longitude, $address)
-    {
-        // dd($latitude, $longitude, $address);
-        $this->latitude = $latitude;
-        $this->longitude = $longitude;
-        $this->address = $address;
-    }
+    // public function setLocation($latitude, $longitude, $address)
+    // {
+    //     Log::info("📡 Evento setLocation recibido en backend", [
+    //         'latitude' => $latitude,
+    //         'longitude' => $longitude,
+    //         'address' => $address
+    //     ]);
 
-    protected function mutateFormDataBeforeCreate(array $data): array
+    //     $this->latitude = $latitude;
+    //     $this->longitude = $longitude;
+    //     $this->address = $address;
+    // }
 
-    {
-        // dd($this->latitude, $this->longitude, $this->address);
-        if ($this->latitude && $this->longitude && $this->address) {
-            // Crear la ubicación
-            $location = Location::create([
-                'address' => $this->address,
-                'latitude' => $this->latitude,
-                'longitude' => $this->longitude,
-            ]);
+    // protected function mutateFormDataBeforeCreate(array $data): array
+    // {
+    //     if ($this->latitude && $this->longitude && $this->address) {
+    //         $location = Location::create([
+    //             'address' => $this->address,
+    //             'latitude' => $this->latitude,
+    //             'longitude' => $this->longitude,
+    //         ]);
 
-            // Asignar la ubicación a la cámara
-            $data['location_id'] = $location->id;
-        } else {
-            throw new \Exception('Ubicación no establecida correctamente.');
-        }
+    //         $data['location_id'] = $location->id;
 
-        return $data;
-    }
+    //         Log::info("📍 Ubicación creada para cámara", [
+    //             'location_id' => $location->id,
+    //             'latitude' => $this->latitude,
+    //             'longitude' => $this->longitude,
+    //             'address' => $this->address
+    //         ]);
+    //     } else {
+    //         throw new \Exception('Ubicación no establecida correctamente.');
+    //     }
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('index');
-    }
-    protected function afterCreate(): void
-    {
-        Notification::make()
-            ->title('Camara creada')
-            ->success()
-            ->body('La cámara se ha creado correctamente.')
-            ->send();
-    }
+    //     return $data;
+    // }
+
+    // protected function getRedirectUrl(): string
+    // {
+    //     return $this->getResource()::getUrl('index');
+    // }
+
+    // protected function afterCreate(): void
+    // {
+    //     Notification::make()
+    //         ->title('Cámara creada')
+    //         ->success()
+    //         ->body('La cámara se ha creado correctamente.')
+    //         ->send();
+    // }
 }

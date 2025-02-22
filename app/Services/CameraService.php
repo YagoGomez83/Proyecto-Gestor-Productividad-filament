@@ -38,6 +38,11 @@ class CameraService
         return $this->cameraRepository->deleteCamera($cameraId);
     }
 
+    public function getAllDeletedCameras()
+    {
+        return $this->cameraRepository->getOnlyDeletedCameras();
+    }
+
     public function restoreCamera($cameraId)
     {
         return $this->cameraRepository->restoreCamera($cameraId);
@@ -56,5 +61,10 @@ class CameraService
     public function getCameraWithPoliceStationAndLocation($cameraId)
     {
         return $this->cameraRepository->getCameraWithPoliceStationAndLocation($cameraId);
+    }
+
+    public function searchCameras($search)
+    {
+        return $this->cameraRepository->searchCameras($search);
     }
 }

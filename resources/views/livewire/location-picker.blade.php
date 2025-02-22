@@ -1,70 +1,34 @@
-@extends('layouts.app') {{-- O el layout que estés usando --}}
+@extends('layouts.app')
 
 @section('content')
-    <div>
-        <form wire:submit.prevent="save">
-            <div class="mb-4">
-                <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
-                <input type="text" wire:model="address" id="address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-            </div>
-            <div class="mb-4">
-                <label for="latitude" class="block text-sm font-medium text-gray-700">Latitude</label>
-                <input type="text" wire:model="latitude" id="latitude" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-            </div>
-            <div class="mb-4">
-                <label for="longitude" class="block text-sm font-medium text-gray-700">Longitude</label>
-                <input type="text" wire:model="longitude" id="longitude" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-            </div>
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Save Location</button>
-        </form>
+<div wire:ignore class="relative w-full h-96">
+    <div id="map" class="w-full h-full rounded-lg border"></div>
+</div>
 
-        <div id="map" class="mt-4" style="height: 400px;"></div>
+<script>
+    document.addEventListener('livewire:load', function () {
+        let map = L.map('map').setView([{{ $latitude ?? -33.2975 }}, {{ $longitude ?? -66.3356 }}], 16);
 
-        @push('scripts')
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    console.log('Página cargada, inicializando mapa...');
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-                    var initialLat = -33.2951;
-                    var initialLng = -66.3379;
+        var marker = L.marker([{{ $latitude ?? -33.2975 }}, {{ $longitude ?? -66.3356 }}], { draggable: true }).addTo(map);
 
-                    var map = L.map('map').setView([initialLat, initialLng], 14);
+        marker.on('dragend', function (e) {
+            var lat = marker.getLatLng().lat;
+            var lng = marker.getLatLng().lng;
 
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '© OpenStreetMap contributors'
-                    }).addTo(map);
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(response => response.json())
+                .then(data => {
+                    var address = data.display_name || "Ubicación desconocida";
 
-                    var marker = L.marker([initialLat, initialLng], { draggable: true }).addTo(map);
-
-                    console.log('Mapa inicializado correctamente.');
-
-                    function updateLocation(lat, lng) {
-                        console.log(`Ubicación actualizada: Lat: ${lat}, Lng: ${lng}`);
-                        Livewire.emit('updateLocation', lat, lng);
-
-                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                let address = data.display_name || 'Dirección no encontrada';
-                                console.log(`Dirección encontrada: ${address}`);
-                                Livewire.emit('updateAddress', address);
-                            })
-                            .catch(error => console.error('Error obteniendo dirección:', error));
-                    }
-
-                    marker.on('dragend', function (e) {
-                        var position = marker.getLatLng();
-                        updateLocation(position.lat, position.lng);
-                    });
-
-                    Livewire.on('updateLocation', (lat, lng) => {
-                        marker.setLatLng([lat, lng]);
-                        map.setView([lat, lng], 14);
-                    });
-
-                    updateLocation(initialLat, initialLng);
-                });
-            </script>
-        @endpush
-    </div>
+                    // Emitir el evento 'setLocation' a Livewire
+                    Livewire.emit('setLocation', lat, lng, address);
+                })
+                .catch(error => console.error('Error obteniendo la dirección:', error));
+        });
+    });
+</script>
 @endsection

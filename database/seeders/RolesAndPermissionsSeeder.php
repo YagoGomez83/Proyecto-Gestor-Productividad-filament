@@ -35,7 +35,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'delete cities',
             'view users',
             'create users',
-            'edit users',
+            'update users',
             'delete users',
             'view groups',
             'create groups',

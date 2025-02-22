@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\ServiceResource\Pages;
 
-use App\Filament\Resources\ServiceResource;
 use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\ServiceResource;
 
 class EditService extends EditRecord
 {
@@ -15,5 +16,19 @@ class EditService extends EditRecord
         return [
             Actions\DeleteAction::make(),
         ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+
+    protected function afterSave(): void
+    {
+        Notification::make()
+            ->title('Unidad Regional actualizada')
+            ->success()
+            ->body('El recurso se ha actualizado correctamente.')
+            ->send();
     }
 }

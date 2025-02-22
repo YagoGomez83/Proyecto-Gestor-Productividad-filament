@@ -12,7 +12,6 @@ RUN apt-get update && apt-get install -y \
     bash \
     libpq-dev \
     libicu-dev \
-    apache2 \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd zip pdo pdo_mysql pdo_pgsql intl
 
@@ -27,17 +26,8 @@ RUN curl -sSL https://github.com/jwilder/dockerize/releases/download/v0.6.1/dock
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs
 
-# Eliminar el archivo de configuración por defecto si existe
-RUN rm -f /etc/apache2/sites-available/000-default.conf
+# Exponer el puerto de PHP-FPM
+EXPOSE 9000
 
-# Copiar la configuración de Apache personalizada desde el archivo en tu máquina local
-COPY ./config/apache/default-ssl.conf /etc/apache2/sites-available/000-default.conf
-
-# Habilitar el sitio predeterminado
-RUN a2ensite 000-default.conf
-
-# Exponer los puertos de Apache y PHP-FPM
-EXPOSE 80
-
-# Comando para ejecutar Apache en primer plano
-CMD ["apache2ctl", "-D", "FOREGROUND"]
+# Comando por defecto
+CMD ["php-fpm"]
