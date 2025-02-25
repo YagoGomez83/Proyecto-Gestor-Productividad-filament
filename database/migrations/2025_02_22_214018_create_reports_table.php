@@ -25,6 +25,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('police_station_id')->references('id')->on('police_stations');
             $table->foreign('cause_id')->references('id')->on('causes');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

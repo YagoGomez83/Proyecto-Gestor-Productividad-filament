@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class PoliceStation extends Model
 {
@@ -25,5 +26,20 @@ class PoliceStation extends Model
     public function cameras(): HasMany
     {
         return $this->hasMany(Camera::class);
+    }
+    public function reports(): HasMany
+    {
+        return $this->hasMany(Report::class);
+    }
+    public function causes(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Cause::class, // El modelo que queremos acceder
+            Report::class, // El modelo intermedio
+            'police_station_id', // Clave foránea en el modelo intermedio (Report)
+            'id', // Clave primaria en el modelo final (Cause)
+            'id', // Clave primaria en el modelo principal (PoliceStation)
+            'cause_id' // Clave foránea en el modelo final (Cause)
+        );
     }
 }

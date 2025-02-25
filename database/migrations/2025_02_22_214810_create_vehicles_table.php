@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('type');
             $table->string('color');
             $table->string('plate_number');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

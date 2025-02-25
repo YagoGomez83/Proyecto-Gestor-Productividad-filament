@@ -40,4 +40,9 @@ class Camera extends Model
     {
         return $this->hasMany(Camera::class);
     }
+
+    public function reports()
+    {
+        return $this->belongsToMany(Report::class, 'camera_report');
+    }
 }

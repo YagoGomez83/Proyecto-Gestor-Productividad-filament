@@ -10,6 +10,7 @@ use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\Auth;
 use App\Filament\Resources\UserResource;
 use Filament\Http\Middleware\Authenticate;
+use App\Filament\Resources\AccusedResource;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -49,6 +50,9 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->resources([
                 UserResource::class,
+                AccusedResource::class,
+
+
             ])
             ->pages([
                 Pages\Dashboard::class,
