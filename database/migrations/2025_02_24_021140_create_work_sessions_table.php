@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('work_sessions', function (Blueprint $table) {
             $table->id();
-            $table->date('work_date');
-            $table->time('start_time');
-            $table->time('end_time');
+            $table->timestamp('start_time');
+            $table->timestamp('end_time')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->date('work_date');
+            $table->enum('type', ['work', 'pause'])->defaultValue('work');
+            $table->unsignedBigInteger('group_id');
+            $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -35,4 +35,9 @@ class Group extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function workSessions(): HasMany
+    {
+        return $this->hasMany(WorkSession::class);
+    }
 }

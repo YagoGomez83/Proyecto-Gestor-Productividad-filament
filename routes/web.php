@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CameraController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 // Route::view('/', 'public.index')->name('welcome');
@@ -32,4 +33,16 @@ Route::middleware(['auth', 'role:coordinator'])->group(function () {
     Route::get('/admin/camera/{id}', [CameraController::class, 'show'])->name('camera.show');
     Route::get('admin/cameras/deleted', [CameraController::class, 'deteledCameras'])->name('cameras.deleted');
     Route::post('/admin/camara/restore/{id}', [CameraController::class, 'restoreCamera'])->name('camera.restore');
+
+    //Reports routes
+
+    Route::get('/admin/reports/custom', [ReportController::class, 'index'])->name('reports.custom');
+    Route::get('/admin/report/create', [ReportController::class, 'create'])->name('report.create');
+    Route::post('/admin/report/store', [ReportController::class, 'store'])->name('reports.store');
+    Route::get('/admin/report/edit/{id}', [ReportController::class, 'edit'])->name('report.editar');
+    Route::put('/admin/report/update/{id}', [ReportController::class, 'update'])->name('report.update');
+    Route::delete('/admin/report/delete/{id}', [ReportController::class, 'destroy'])->name('report.delete');
+    Route::get('/admin/report/{id}', [ReportController::class, 'show'])->name('report.show');
+    Route::get('admin/reports/deleted', [ReportController::class, 'deteledReports'])->name('reports.deleted');
+    Route::post('/admin/report/restore/{id}', [ReportController::class, 'restoreReport'])->name('report.restore');
 });

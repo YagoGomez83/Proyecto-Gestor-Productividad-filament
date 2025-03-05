@@ -30,7 +30,7 @@ class CameraController extends Controller
         $search = $request->input('search');
 
 
-        $cameras = $this->cameraService->searchCameras($search);
+        $cameras = $this->cameraService->searchCameras($search, 10);
 
         return view('camera.index', compact('cameras'));
     }

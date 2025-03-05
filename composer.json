@@ -10,6 +10,7 @@
         "bezhansalleh/filament-panel-switch": "^1.0",
         "codeat3/blade-govicons": "^1.4",
         "filament/filament": "^3.2",
+        "flowframe/laravel-trend": "*",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
         "spatie/laravel-permission": "^6.10"

@@ -63,8 +63,8 @@ class CameraService
         return $this->cameraRepository->getCameraWithPoliceStationAndLocation($cameraId);
     }
 
-    public function searchCameras($search)
+    public function searchCameras($search, $perPage = 10)
     {
-        return $this->cameraRepository->searchCameras($search);
+        return $this->cameraRepository->searchCameras($search, $perPage);
     }
 }

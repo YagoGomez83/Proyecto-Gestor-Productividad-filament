@@ -6,9 +6,9 @@ use App\Models\Report;
 
 class ReportRepository
 {
-    public function getAllReports()
+    public function getAllReports($perPage = 10)
     {
-        return Report::all();
+        return Report::paginate($perPage);
     }
 
     public function getReportById($id)
@@ -86,5 +86,37 @@ class ReportRepository
     public function getReportsWithLocation($id)
     {
         return Report::with('location')->find($id);
+    }
+
+    public function searchReports($search, $perPage = 10)
+    {
+        return Report::with(['policeStation', 'cause', 'accuseds', 'victims', 'vehicles', 'cameras', 'location'])
+            ->when($search, function ($query) use ($search) {
+                $query->whereRaw("LOWER(title) LIKE LOWER(?)", ["%$search%"])
+                    ->orWhereRaw("LOWER(description) LIKE LOWER(?)", ["%$search%"])
+                    ->orWhereRaw("CAST(report_date AS TEXT) LIKE LOWER(?)", ["%$search%"]) // ✅ Conversión de fecha
+                    ->orWhereRaw("CAST(report_time AS TEXT) LIKE LOWER(?)", ["%$search%"]) // ✅ Conversión de hora
+                    ->orWhereHas('location', function ($q) use ($search) {
+                        $q->whereRaw("LOWER(address) LIKE LOWER(?)", ["%$search%"]);
+                    })
+                    ->orWhereHas('policeStation', function ($q) use ($search) {
+                        $q->whereRaw("LOWER(name) LIKE LOWER(?)", ["%$search%"]);
+                    })
+                    ->orWhereHas('cause', function ($q) use ($search) {
+                        $q->whereRaw("LOWER(cause_name) LIKE LOWER(?)", ["%$search%"]);
+                    })
+                    ->orWhereHas('accuseds', function ($q) use ($search) {
+                        $q->whereRaw("LOWER(name) LIKE LOWER(?)", ["%$search%"]);
+                    })
+                    ->orWhereHas('victims', function ($q) use ($search) {
+                        $q->whereRaw("LOWER(name) LIKE LOWER(?)", ["%$search%"]);
+                    })
+                    ->orWhereHas('vehicles', function ($q) use ($search) {
+                        $q->whereRaw("LOWER(brand) LIKE LOWER(?)", ["%$search%"]);
+                    })
+                    ->orWhereHas('cameras', function ($q) use ($search) {
+                        $q->whereRaw("LOWER(identifier) LIKE LOWER(?)", ["%$search%"]);
+                    });
+            })->paginate($perPage);
     }
 }

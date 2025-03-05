@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Carbon\Carbon;
 
 class Report extends Model
 {
@@ -17,11 +18,15 @@ class Report extends Model
         'description',
         'report_date',
         'report_time',
-        'dependence_id',
+        'police_station_id',
         'location_id',
         'user_id',
-        'address',
         'cause_id'
+    ];
+
+    protected $casts = [
+        'report_date' => 'date',
+        'report_time' => 'datetime:H:i:s'
     ];
 
     public function user(): BelongsTo

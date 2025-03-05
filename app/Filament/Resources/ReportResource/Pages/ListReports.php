@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\ReportResource\Pages;
 
-use App\Filament\Resources\ReportResource;
 use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\ReportResource;
 
 class ListReports extends ListRecords
 {
@@ -13,7 +14,12 @@ class ListReports extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            // Actions\CreateAction::make(),
+            Action::make('index')
+                ->label('Ver reportes')
+                ->url(route('reports.custom')) // Ahora apunta a la ruta personalizada
+                ->icon('heroicon-o-eye'),
+
         ];
     }
 }

@@ -36,7 +36,7 @@
                     @csrf
                     <button type="submit" class="text-red-600 hover:underline">Logout</button>
                 </form> --}}
-                <a href="{{ route('filament.admin.resources.cameras.index') }}" class="text-blue-600 hover:underline uppercase">Volver al Panel</a>
+                <a href="{{ route('filament.admin.pages.dashboard') }}" class="text-blue-600 hover:underline uppercase">Volver al Panel</a>
             </div>
         </div>
     </nav>

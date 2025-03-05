@@ -62,5 +62,8 @@
             @endforeach
         </tbody>
     </table>
+    <div class="mt-4">
+        {{ $cameras->links() }} {{-- Mostrará los enlaces de paginación --}}
+    </div>
    </div>
 @endsection

@@ -13,9 +13,9 @@ class ReportService
         $this->reportRepository = $reportRepository;
     }
 
-    public function getAllReports()
+    public function getAllReports($perPage = 10)
     {
-        return $this->reportRepository->getAllReports();
+        return $this->reportRepository->getAllReports($perPage);
     }
 
     public function getReportById($reportId)
@@ -91,5 +91,9 @@ class ReportService
     public function getReportsWithCameras($camerasId)
     {
         return $this->reportRepository->getReportsWithCameras($camerasId);
+    }
+    public function searchReports($search, $perPage = 10)
+    {
+        return $this->reportRepository->searchReports($search);
     }
 }

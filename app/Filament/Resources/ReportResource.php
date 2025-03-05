@@ -16,7 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ReportResource extends Resource
 {
     protected static ?string $model = Report::class;
-
+    protected static ?string $navigationGroup = 'IGE';
+    protected static ?string $navigationLabel = 'Informes Especiales';
+    protected static ?int $navigationSort = 5;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -64,7 +66,7 @@ class ReportResource extends Resource
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('report_time'),
-                Tables\Columns\TextColumn::make('location_id')
+                Tables\Columns\TextColumn::make('location.address')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
@@ -73,7 +75,7 @@ class ReportResource extends Resource
                 Tables\Columns\TextColumn::make('policeStation.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('cause.id')
+                Tables\Columns\TextColumn::make('cause.cause_name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -89,7 +91,9 @@ class ReportResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -72,15 +72,21 @@ class CameraRepository
         return Camera::with(['policeStation', 'city'])->find($id);
     }
 
-    public function searchCameras($search)
+    public function searchCameras($search, $perPage = 10)
     {
         return Camera::with(['city', 'policeStation', 'location'])
             ->when($search, function ($query) use ($search) {
                 $query->whereRaw("LOWER(identifier) LIKE LOWER(?)", ["%$search%"])
                     ->orWhereHas('city', function ($q) use ($search) {
                         $q->whereRaw("LOWER(name) LIKE LOWER(?)", ["%$search%"]);
+                    })
+                    ->orWhereHas('location', function ($q) use ($search) {
+                        $q->whereRaw("LOWER(address) LIKE LOWER(?)", ["%$search%"]); // Busca en dirección de ubicación
+                    })
+                    ->orWhereHas('policeStation', function ($q) use ($search) {
+                        $q->whereRaw("LOWER(name) LIKE LOWER(?)", ["%$search%"]); // Busca en nombre de la comisaría
                     });
             })
-            ->get();
+            ->paginate($perPage);
     }
 }

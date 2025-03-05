@@ -69,6 +69,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Report::class);
     }
+
+    public function workSessions(): HasMany
+    {
+        return $this->hasMany(WorkSession::class);
+    }
     // Método para eliminar un usuario lógicamente
 
 }

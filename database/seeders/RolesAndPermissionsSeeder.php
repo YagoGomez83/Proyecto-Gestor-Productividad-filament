@@ -82,7 +82,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'edit vehicles',
             'delete vehicles',
 
-
         ];
 
         foreach ($permissions as $permission) {
@@ -91,7 +90,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Asignar permisos a roles
         $coordinator->givePermissionTo($permissions);
-        $supervisor->givePermissionTo(['view cameras', 'view locations', 'view services', 'create services', 'edit services', 'delete services', 'view cities', 'view users', 'view groups', 'view police_movement_codes', 'view police_stations', 'view regional_units', 'view sub_police_movement_codes', 'view work_sessions']);
-        $operator->givePermissionTo(['view cameras', 'view services']);
+        $supervisor->givePermissionTo(['view cameras', 'view locations', 'view services', 'create services', 'edit services', 'delete services', 'view cities', 'view users', 'view groups', 'view police_movement_codes', 'view police_stations', 'view regional_units', 'view sub_police_movement_codes', 'view work_sessions', 'create work_sessions']);
+        $operator->givePermissionTo(['view cameras', 'view services', 'view work_sessions', 'create work_sessions']);
     }
 }
