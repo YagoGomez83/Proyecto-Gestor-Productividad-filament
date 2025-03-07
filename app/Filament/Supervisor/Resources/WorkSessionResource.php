@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Operator\Resources;
+namespace App\Filament\Supervisor\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Operator\Resources\WorkSessionResource\Pages;
-use App\Filament\Operator\Resources\WorkSessionResource\RelationManagers;
+use App\Filament\Supervisor\Resources\WorkSessionResource\Pages;
+use App\Filament\Supervisor\Resources\WorkSessionResource\RelationManagers;
 
 class WorkSessionResource extends Resource
 {
@@ -21,9 +21,9 @@ class WorkSessionResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public function getElocuentQuery(): Builder
+    protected function getElocuentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('user_id', Auth::user()->id)->orderBy('created_at', 'desc');
+        return parent::getEloquentQuery()->where('group_id', Auth::user()->group_id)->orderBy('start_time', 'desc');
     }
     public static function form(Form $form): Form
     {
@@ -72,13 +72,8 @@ class WorkSessionResource extends Resource
                     ->date()
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at') // Muestra la fecha de creación
-                    ->label('Creado el')
-                    ->dateTime()
-                    ->sortable()
                 //
             ])
-            ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('type')->options([
                     'work' => 'Work',

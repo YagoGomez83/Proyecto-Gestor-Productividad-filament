@@ -80,12 +80,11 @@ class ServiceResource extends Resource
                     ->reactive()
                     ->afterStateUpdated(fn($set) => $set('final_sub_police_movement_code_id', null)),
 
+
                 Forms\Components\Select::make('final_sub_police_movement_code_id')
                     ->label('Sub Código Final')
-                    ->options(fn($get, $record) => $record
-                        ? $record->finalSubPoliceMovementCodes()->pluck('sub_police_movement_codes.description', 'sub_police_movement_codes.id') // ✅ Especificar la tabla
-                        : [])
-                    ->default(fn($record) => $record?->final_sub_police_movement_code_id) // Precargar el valor guardado
+                    ->options(fn($get) => \App\Models\SubPoliceMovementCode::where('police_movement_code_id', $get('final_police_movement_code_id'))
+                        ->pluck('description', 'id'))
                     ->searchable()
                     ->preload()
                     ->reactive()
