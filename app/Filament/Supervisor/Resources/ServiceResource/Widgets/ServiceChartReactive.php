@@ -2,21 +2,19 @@
 
 namespace App\Filament\Supervisor\Resources\ServiceResource\Widgets;
 
-use Filament\Widgets\ChartWidget;
+use App\Models\Service;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
-use App\Models\Service;
-use Carbon\Carbon;
-use Illuminate\Contracts\Support\Htmlable;
+use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Auth;
 
-class ServiceChart extends ChartWidget
+class ServiceChartReactive extends ChartWidget
 {
-    protected static ?string $heading = 'Servicios Preventivos'; // Título del widget
+    protected static ?string $heading = 'Servicios Reactivos';
+    protected static ?string $description = 'Cantidad de servicios reactivos.';
+    public ?string $filter = 'month';
 
-    public ?string $filter = 'month'; // Filtro predeterminado
-
-    protected function getFilters(): ?array
+    protected function getFilters(): array
     {
         return [
             'today' => 'Hoy',
@@ -25,15 +23,11 @@ class ServiceChart extends ChartWidget
         ];
     }
 
-    public function getDescription(): string|Htmlable|null
-    {
-        return 'Cantidad de servicios Preventivos';
-    }
 
     protected function getData(): array
     {
         $activeFilter = $this->filter;
-        $data = Trend::query(Service::where('group_id', Auth::user()->group_id)->where('status', 'preventive'))
+        $data = Trend::query(Service::where('group_id', Auth::user()->group_id)->where('status', 'reactive'))
             ->between(
                 start: match ($activeFilter) {
                     'today' => now()->startOfDay(),
@@ -46,21 +40,21 @@ class ServiceChart extends ChartWidget
             ->dateColumn('service_date')
             ->perDay()
             ->count();
-
-
         return [
             'datasets' => [
                 [
-                    'label' => 'Servicios Preventuvos',
-                    'data' => $data->map(fn(TrendValue $value) => $value->aggregate),
+                    'label' => 'Servicios Reactivos',
+                    'data' => $data->map(fn(TrendValue $trend) => $trend->aggregate)->toArray(),
                 ],
             ],
-            'labels' => $data->map(fn(TrendValue $value) => $value->date),
+            'labels' => $data->map(fn(TrendValue $trend) => $trend->date)->toArray(), // Add labels as needed. For example, 'Monday', 'Tuesday', etc.
+
+            //
         ];
     }
 
     protected function getType(): string
     {
-        return 'bar'; // Gráfico de barras
+        return 'bar';
     }
 }
