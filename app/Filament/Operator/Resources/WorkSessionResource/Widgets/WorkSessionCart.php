@@ -2,6 +2,7 @@
 
 namespace App\Filament\Operator\Resources\WorkSessionResource\Widgets;
 
+use App\Models\Service;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\WorkSession;
@@ -17,6 +18,9 @@ class WorkSessionCart extends BaseWidget
             Stat::make('Total de trabajo', $this->getTotalWork(Auth::user())),
             Stat::make('Total de Descanso', $this->getTotalPause(Auth::user())),
             Stat::make('Duración de la sesión actual', $this->getCurrentSessionDuration(Auth::user())),
+            Stat::make('Total de servicios preventivos', $this->getServicePreventive()),
+            Stat::make('Total de servicios reactivos', $this->getServiceReactive()),
+            Stat::make('Total de servicios', $this->getTotalServices()),
             // Add more stats as needed...
             //
         ];
@@ -94,5 +98,38 @@ class WorkSessionCart extends BaseWidget
         }
         // dd($minutes);
         return "{$status} - {$minutes} minutos";
+    }
+
+    public function getServicePreventive()
+    {
+        $servicePreventive = Service::where('user_id', Auth::user()->id)
+            ->where('status', 'preventive')
+            ->whereMonth('service_date', Carbon::now()->month)
+            ->whereYear('service_date', Carbon::now()->year)
+            ->count();
+        return $servicePreventive;
+    }
+    public function getServiceReactive()
+    {
+        $serviceReactive = Service::where('user_id', Auth::user()->id)
+            ->where('status', 'reactive')
+            ->whereMonth('service_date', Carbon::now()->month)
+            ->whereYear('service_date', Carbon::now()->year)
+            ->count();
+        return $serviceReactive;
+    }
+    public function getTotalServices()
+    {
+        $servicePreventive = Service::where('user_id', Auth::user()->id)
+            ->where('status', 'preventive')
+            ->whereMonth('service_date', Carbon::now()->month)
+            ->whereYear('service_date', Carbon::now()->year)
+            ->count();
+        $serviceReactive = Service::where('user_id', Auth::user()->id)
+            ->where('status', 'reactive')
+            ->whereMonth('service_date', Carbon::now()->month)
+            ->whereYear('service_date', Carbon::now()->year)
+            ->count();
+        return $servicePreventive + $serviceReactive / 2;
     }
 }

@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Supervisor\Resources\ServiceResource\Widgets\ServiceChart;
 use App\Filament\Supervisor\Resources\ServiceResource\Widgets\ServiceChartReactive;
+use App\Filament\Supervisor\Resources\ServiceResource\Widgets\ServicePie;
 use App\Filament\Supervisor\Resources\ServiceResource\Widgets\ServiceStats;
 use App\Filament\Supervisor\Resources\WokSessionResource\Widgets\WorkSession;
 use App\Filament\Supervisor\Resources\WorkSessionResource\Widgets\WorkSessionTable;
@@ -59,6 +60,7 @@ class SupervisorPanelProvider extends PanelProvider
                 ServiceStats::class,
                 ServiceChart::class,
                 ServiceChartReactive::class,
+                ServicePie::class,
             ])
             ->middleware([
                 EncryptCookies::class,

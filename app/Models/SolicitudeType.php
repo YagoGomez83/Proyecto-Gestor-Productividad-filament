@@ -6,21 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Cause extends Model
+class SolicitudeType extends Model
 {
     //
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
-
     protected $fillable = [
-        'cause_name',
+        'type',
+        'description'
     ];
-
-    public function reports()
-    {
-        return $this->hasMany(Report::class);
-    }
-
     public function sismoRegisters()
     {
         return $this->hasMany(SismoRegister::class);

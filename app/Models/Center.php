@@ -26,4 +26,9 @@ class Center extends Model
     {
         return $this->hasMany(RegionalUnit::class);
     }
+
+    public function sismoRegisters(): HasMany
+    {
+        return $this->hasMany(SismoRegister::class);
+    }
 }

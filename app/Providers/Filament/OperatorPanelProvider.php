@@ -63,7 +63,7 @@ class OperatorPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Operator/Widgets'), for: 'App\\Filament\\Operator\\Widgets')
             ->widgets([
-                WidgetsWorkSessionsChart::class,
+                // WidgetsWorkSessionsChart::class,
                 WorkSessionCart::class,
 
             ])

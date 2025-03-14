@@ -42,4 +42,9 @@ class PoliceStation extends Model
             'cause_id' // Clave foránea en el modelo final (Cause)
         );
     }
+
+    public function sismoRegisters(): HasMany
+    {
+        return $this->hasMany(SismoRegister::class);
+    }
 }
