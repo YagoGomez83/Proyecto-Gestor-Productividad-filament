@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Report extends Model
 {
@@ -67,5 +68,9 @@ class Report extends Model
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class);
+    }
+    public function specialReportRequest(): HasMany
+    {
+        return $this->hasMany(SpecialReportRequest::class);
     }
 }

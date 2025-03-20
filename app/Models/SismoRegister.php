@@ -22,7 +22,8 @@ class SismoRegister extends Model
         'description',
         'cause_id',
         'center_id',
-        'police_station_id'
+        'police_station_id',
+        'user_id'
     ];
 
     public function solicitudeType(): BelongsTo
@@ -53,5 +54,18 @@ class SismoRegister extends Model
     public function callLetterExport(): HasOne
     {
         return $this->hasOne(CallLetterExport::class);
+    }
+
+    public function FeasibilityRequest(): HasOne
+    {
+        return $this->hasOne(FeasibilityRequest::class);
+    }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function specialReportRequest(): HasMany
+    {
+        return $this->hasMany(SpecialReportRequest::class);
     }
 }

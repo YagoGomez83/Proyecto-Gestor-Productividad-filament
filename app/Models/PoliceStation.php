@@ -47,4 +47,8 @@ class PoliceStation extends Model
     {
         return $this->hasMany(SismoRegister::class);
     }
+    public function aplicationForAdmissions(): HasMany
+    {
+        return $this->hasMany(ApplicationForAdmission::class);
+    }
 }

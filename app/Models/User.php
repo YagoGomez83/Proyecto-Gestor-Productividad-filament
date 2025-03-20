@@ -74,6 +74,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(WorkSession::class);
     }
+    public function sismoRegisters(): HasMany
+    {
+        return $this->hasMany(SismoRegister::class);
+    }
     // Método para eliminar un usuario lógicamente
-
+    public function aplicationForAdmissions(): HasMany
+    {
+        return $this->hasMany(ApplicationForAdmission::class);
+    }
 }

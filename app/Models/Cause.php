@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Cause extends Model
@@ -24,5 +25,9 @@ class Cause extends Model
     public function sismoRegisters()
     {
         return $this->hasMany(SismoRegister::class);
+    }
+    public function aplicationForAdmissions(): HasMany
+    {
+        return $this->hasMany(ApplicationForAdmission::class);
     }
 }

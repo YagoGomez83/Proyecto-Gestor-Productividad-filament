@@ -49,6 +49,7 @@ class SismoRegisterResource extends Resource
 
                 // 🔥 Repeater para agregar varios CameraExport directamente desde el formulario de SismoRegister
                 Forms\Components\Repeater::make('cameraExport')
+                    ->label('Exportación de Camaras')
                     ->relationship('cameraExport') // Se vincula con la relación
                     ->schema([
                         Forms\Components\DateTimePicker::make('start_datetime')
@@ -67,13 +68,15 @@ class SismoRegisterResource extends Resource
                             ->multiple()
                             ->relationship('cameras', 'identifier')
                             ->label('Camaras')
+                            ->required()
                             ->preload(),
                     ])
                     ->collapsible()
                     ->defaultItems(1),
 
                 Forms\Components\Repeater::make('callLetterExport')
-                    ->relationship('callLetterExport') // Se vincula con la relación
+                    ->relationship('callLetterExport')
+                    ->label('Exportación de Carta de llamada') // Se vincula con la relación
                     ->schema([
                         Forms\Components\TextInput::make('event_number')
                             ->label('Numero de Suceso')
@@ -93,6 +96,51 @@ class SismoRegisterResource extends Resource
                     ])
                     ->collapsible()
                     ->defaultItems(1),
+
+                Forms\Components\Repeater::make('feasibilityRequest')
+                    ->label('Solicitud de Factibilidad')
+                    ->relationship('feasibilityRequest') // Relación en plural si se define como hasMany en el modelo padre
+                    ->schema([
+                        Forms\Components\Select::make('Feasibility_request')
+                            ->label('Factibilidad')
+                            ->options([
+                                'not applicable' => 'No aplica',
+                                'incomplete' => 'Incompleto',
+                                'feasible' => 'Factible',
+                                'not feasible' => 'No factible'
+                            ])
+                            ->required(),
+                        Forms\Components\Toggle::make('Requests_report')
+                            ->label('Reporte de Solicitud'),
+                        Forms\Components\Toggle::make('Device_assignment')
+                            ->label('Asignación de Dispositivo'),
+                        Forms\Components\Toggle::make('Reports_end_of_monitoring')
+                            ->label('Reporte de Fin de Monitoreo'),
+                        Forms\Components\Toggle::make('Success')
+                            ->label('Logrado'),
+                        Forms\Components\Textarea::make('Description')
+                            ->label('Observaciones'),
+                    ])
+                    ->collapsible()
+                    ->defaultItems(1),
+                Forms\Components\Repeater::make('specialReportRequest')
+                    ->label('Solicitud de Informe Especial')
+                    ->relationship('specialReportRequest') // Relación en plural si se define como hasMany en el modelo padre
+                    ->schema([
+                        Forms\Components\Select::make('report_id')
+                            ->label('Informe Especial')
+                            ->relationship('report', 'title')
+                            ->searchable()
+                            ->preload()
+                            ->required(),
+                        Forms\Components\Toggle::make('success')
+                            ->label('Logrado'),
+                        Forms\Components\Textarea::make('description')
+                            ->label('Observaciones'),
+                    ])
+                    ->collapsible()
+                    ->defaultItems(1),
+
                 Forms\Components\Textarea::make('description')
                     ->label('Observaciones'),
 
@@ -103,11 +151,19 @@ class SismoRegisterResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('date_solicitude')
                     ->label('Fecha de la solicitud')
                     ->sortable()
                     ->searchable()
                     ->date(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Usuario')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('solicitud_number')
                     ->label('Número de solicitud')
                     ->sortable()
@@ -133,10 +189,7 @@ class SismoRegisterResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->date(),
-                Tables\Columns\TextColumn::make('description')
-                    ->label('Descripción')
-                    ->sortable()
-                    ->limit(50),
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -51,4 +51,8 @@ class Camera extends Model
     {
         return $this->belongsToMany(CameraExport::class, 'camera_camera_exports');
     }
+    public function applicationForAdmissions(): BelongsToMany
+    {
+        return $this->belongsToMany(ApplicationForAdmission::class, 'application_for_admissions_cameras');
+    }
 }
