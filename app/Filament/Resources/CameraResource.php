@@ -139,6 +139,7 @@ class CameraResource extends Resource
                     ->icon('heroicon-o-pencil'),
 
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])

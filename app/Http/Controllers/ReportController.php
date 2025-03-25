@@ -77,6 +77,7 @@ class ReportController extends Controller
     public function store(ReportRequest $request)
     {
 
+
         // Crear la ubicación primero
         $locationData = $request->only(['address', 'latitude', 'longitude']);
         $location = $this->locationService->createLocation($locationData);
@@ -103,18 +104,36 @@ class ReportController extends Controller
 
     public function edit($id)
     {
+        $vehicles = $this->vehicleService->getAllVehicles();
+        $accuseds = $this->accusedService->getAllAccuseds();
+        $victims = $this->victimService->getAllVictims();
+        $locations = $this->locationService->getAllLocations();
+        $cameras = $this->cameraService->getAllCameras();
+        $cities = $this->cityService->getAllCities();
+        $policeStations = $this->policeStationService->getAll();
+        $causes = $this->causeService->getAllCauses();
         $report = $this->reportService->getReportById($id);
-        return view('reports.edit', compact('report'));
+        return view('reports.edit', compact(['report', 'vehicles', 'accuseds', 'victims', 'locations', 'cameras', 'cities', 'policeStations', 'causes']));
     }
 
-    public function update(Request $request, $id)
+    public function update(ReportRequest $request, $id)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-        ]);
+        // Obtener el informe existente
+        $report = $this->reportService->getReportById($id);
 
-        $this->reportService->updateReport($id, $request->all());
+        // Actualizar la ubicación
+        $locationData = $request->only(['address', 'latitude', 'longitude']);
+        $this->locationService->updateLocation($report->location_id, $locationData);
+
+        // Actualizar el informe
+        $reportData = $request->only(['title', 'description', 'report_date', 'report_time', 'police_station_id', 'cause_id']);
+        $this->reportService->updateReport($id, $reportData);
+
+        // Sincronizar relaciones
+        $report->cameras()->sync($request->input('cameras', []));
+        $report->victims()->sync($request->input('victims', []));
+        $report->vehicles()->sync($request->input('vehicles', []));
+        $report->accuseds()->sync($request->input('accuseds', []));
 
         return redirect()->route('reports.custom')->with('success', 'Report updated successfully.');
     }

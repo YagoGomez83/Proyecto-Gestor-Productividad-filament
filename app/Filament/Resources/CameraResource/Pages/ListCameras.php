@@ -17,7 +17,7 @@ class ListCameras extends ListRecords
             // Actions\CreateAction::make(),
             Action::make('index')
                 ->label('Ver cámaras')
-                ->url(route('cameras.custom')) // Ahora apunta a la ruta personalizada
+                ->url(route('cameras.custom'), true) // Ahora apunta a la ruta personalizada
                 ->icon('heroicon-o-eye'),
 
         ];

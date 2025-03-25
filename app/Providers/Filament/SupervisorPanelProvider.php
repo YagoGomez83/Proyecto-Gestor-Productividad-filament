@@ -33,7 +33,7 @@ class SupervisorPanelProvider extends PanelProvider
             ->id('supervisor')
             ->path('supervisor')
             ->login()
-            ->authMiddleware([Authenticate::class, 'role:supervisor|coordinator'])
+            ->authMiddleware([Authenticate::class, 'role:supervisor'])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -47,7 +47,7 @@ class SupervisorPanelProvider extends PanelProvider
             ])
             ->default()
             ->colors([
-                'primary' => Color::Blue
+                'primary' => Color::Green
             ])
             ->discoverResources(in: app_path('Filament/Supervisor/Resources'), for: 'App\\Filament\\Supervisor\\Resources')
             ->discoverPages(in: app_path('Filament/Supervisor/Pages'), for: 'App\\Filament\\Supervisor\\Pages')

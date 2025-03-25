@@ -43,9 +43,11 @@ class PoliceMovementCodeResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('code')
                     ->label('Código')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Descripción')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Creado')

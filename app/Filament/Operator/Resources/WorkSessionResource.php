@@ -19,7 +19,10 @@ class WorkSessionResource extends Resource
 {
     protected static ?string $model = WorkSession::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clock';
+    protected static ?string $navigationLabel = 'Descansos';
+    protected static ?int $navigationSort = 1;
+    protected static ?string $navigationGroup = 'Operador';
 
     public function getElocuentQuery(): Builder
     {

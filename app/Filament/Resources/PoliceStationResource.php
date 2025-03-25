@@ -18,7 +18,7 @@ class PoliceStationResource extends Resource
     protected static ?string $model = PoliceStation::class;
 
     protected static ?string $navigationGroup = 'Policial';
-    protected static ?string $navigationLabel = 'Comisarias';
+    protected static ?string $navigationLabel = 'Dependencias';
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
     protected static ?int $navigationSort = 4;
 
@@ -43,7 +43,8 @@ class PoliceStationResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('nombre')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('city.name')
                     ->label('Ciudad')
                     ->searchable()

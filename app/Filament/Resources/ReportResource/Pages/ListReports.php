@@ -17,7 +17,7 @@ class ListReports extends ListRecords
             // Actions\CreateAction::make(),
             Action::make('index')
                 ->label('Ver reportes')
-                ->url(route('reports.custom')) // Ahora apunta a la ruta personalizada
+                ->url(route('reports.custom'), true) // Ahora apunta a la ruta personalizada
                 ->icon('heroicon-o-eye'),
 
         ];

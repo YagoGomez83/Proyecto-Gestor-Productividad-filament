@@ -20,10 +20,10 @@ use Illuminate\Support\Facades\Route;
 //     return abort(403);
 // })->middleware('auth')->name('dashboard');
 Route::get('/', function () {
-    return redirect('/operator');
+    return view('public.home');
 });
 
-Route::middleware(['auth', 'role:coordinator'])->group(function () {
+Route::middleware(['auth', 'role:coordinator|supervisor'])->group(function () {
     Route::get('/admin/cameras/custom', [CameraController::class, 'index'])->name('cameras.custom');
     Route::get('/admin/camera/create', [CameraController::class, 'create'])->name('camera.create');
     Route::post('/admin/camera/store', [CameraController::class, 'store'])->name('cameras.store');

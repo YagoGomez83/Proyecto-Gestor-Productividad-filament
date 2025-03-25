@@ -27,9 +27,11 @@ class SismoRegisterResource extends Resource
                     ->label('Fecha de la solicitud')
                     ->required(),
                 Forms\Components\TextInput::make('solicitud_number')
-                    ->label('Numero (Ampsum/EXD/N° Oficio)')
+                    ->label('Numero (Ampsum/EXD)')
                     ->required(),
-
+                Forms\Components\TextInput::make('solicitud_number_note')
+                    ->label('Numero Ampsum/EXD/Oficio/Oficio')
+                    ->required(),
                 Forms\Components\Select::make('solicitude_type_id')
                     ->relationship('solicitudeType', 'type')
                     ->required()
@@ -41,7 +43,7 @@ class SismoRegisterResource extends Resource
                 Forms\Components\Select::make('police_station_id')
                     ->relationship('policeStation', 'name')
                     ->required()
-                    ->label('Comisaría'),
+                    ->label('Dependencia Solicitante'),
                 Forms\Components\Select::make('cause_id')
                     ->relationship('cause', 'cause_name')
                     ->required()
@@ -58,8 +60,10 @@ class SismoRegisterResource extends Resource
                         Forms\Components\DateTimePicker::make('end_datetime')
                             ->label('Fecha de finalización')
                             ->required(),
-                        Forms\Components\Toggle::make('success')
-                            ->label('logrado'),
+                        Forms\Components\ToggleButtons::make('success')
+                            ->label('logrado')
+                            ->inline()
+                            ->boolean(),
 
                         Forms\Components\Textarea::make('description')
                             ->label('Observaciones'),
@@ -68,7 +72,6 @@ class SismoRegisterResource extends Resource
                             ->multiple()
                             ->relationship('cameras', 'identifier')
                             ->label('Camaras')
-                            ->required()
                             ->preload(),
                     ])
                     ->collapsible()
@@ -87,8 +90,10 @@ class SismoRegisterResource extends Resource
                         Forms\Components\DateTimePicker::make('end_datetime')
                             ->label('Hora de Finalización')
                             ->required(),
-                        Forms\Components\Toggle::make('success')
-                            ->label('logrado'),
+                        Forms\Components\ToggleButtons::make('success')
+                            ->label('logrado')
+                            ->inline()
+                            ->boolean(),
                         Forms\Components\Textarea::make('description')
                             ->label('Observaciones'),
 
@@ -110,14 +115,22 @@ class SismoRegisterResource extends Resource
                                 'not feasible' => 'No factible'
                             ])
                             ->required(),
-                        Forms\Components\Toggle::make('Requests_report')
-                            ->label('Reporte de Solicitud'),
-                        Forms\Components\Toggle::make('Device_assignment')
-                            ->label('Asignación de Dispositivo'),
-                        Forms\Components\Toggle::make('Reports_end_of_monitoring')
-                            ->label('Reporte de Fin de Monitoreo'),
-                        Forms\Components\Toggle::make('Success')
-                            ->label('Logrado'),
+                        Forms\Components\ToggleButtons::make('Requests_report')
+                            ->label('Reporte de Solicitud')
+                            ->inline()
+                            ->boolean(),
+                        Forms\Components\ToggleButtons::make('Device_assignment')
+                            ->label('Asignación de Dispositivo')
+                            ->inline()
+                            ->boolean(),
+                        Forms\Components\ToggleButtons::make('Reports_end_of_monitoring')
+                            ->label('Reporte de Fin de Monitoreo')
+                            ->inline()
+                            ->boolean(),
+                        Forms\Components\ToggleButtons::make('Success')
+                            ->label('Logrado')
+                            ->inline()
+                            ->boolean(),
                         Forms\Components\Textarea::make('Description')
                             ->label('Observaciones'),
                     ])
@@ -133,8 +146,10 @@ class SismoRegisterResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required(),
-                        Forms\Components\Toggle::make('success')
-                            ->label('Logrado'),
+                        Forms\Components\ToggleButtons::make('success')
+                            ->label('Logrado')
+                            ->inline()
+                            ->boolean(),
                         Forms\Components\Textarea::make('description')
                             ->label('Observaciones'),
                     ])
@@ -168,6 +183,10 @@ class SismoRegisterResource extends Resource
                     ->label('Número de solicitud')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('solicitud_number_note')
+                    ->label('Número Ampsum/EXD/Oficio/Oficio')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('solicitudeType.type')
                     ->label('Tipo de solicitud')
                     ->sortable()
@@ -191,6 +210,7 @@ class SismoRegisterResource extends Resource
                     ->date(),
 
             ])
+            ->defaultSort('created_at', 'desc')
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

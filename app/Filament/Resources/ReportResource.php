@@ -39,18 +39,56 @@ class ReportResource extends Resource
                 Forms\Components\TextInput::make('report_time')
                     ->label('Hora del Informe')
                     ->required(),
-                Forms\Components\TextInput::make('location_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('location_id')
+                    ->relationship('location', 'address')
+                    ->label('Ubicación')
+                    ->required(),
                 Forms\Components\Select::make('user_id')
+                    ->label('Creado Por:')
                     ->relationship('user', 'name')
                     ->required(),
                 Forms\Components\Select::make('police_station_id')
+                    ->label('Dependencia')
                     ->relationship('policeStation', 'name')
                     ->required(),
                 Forms\Components\Select::make('cause_id')
-                    ->relationship('cause', 'id')
+                    ->label('Causa')
+                    ->relationship('cause', 'cause_name')
                     ->required(),
+                Forms\Components\Select::make('accuseds')
+                    ->relationship('accuseds', 'name')
+                    ->getOptionLabelFromRecordUsing(fn($record) => "({$record->name} - {$record->lastName} - Apodo: {$record->nickName})")
+                    ->multiple()
+                    ->preload()
+                    ->label('Sospechosos'),
+                Forms\Components\Select::make('victims')
+                    ->relationship('victims', 'name')
+                    ->getOptionLabelFromRecordUsing(fn($record) => "({$record->name} - {$record->lastName})")
+                    ->multiple()
+                    ->preload()
+                    ->label('Damnificados'),
+                Forms\Components\Select::make('vehicles')
+                    ->relationship('vehicles', 'brand')
+                    ->getOptionLabelFromRecordUsing(fn($record) => "({$record->brand} - {$record->model} - {$record->plate_number})")
+                    ->multiple()
+                    ->preload()
+                    ->label('Vehículos involucrados'),
+                Forms\Components\Select::make('cameras')
+                    ->relationship('cameras', 'identifier')
+                    ->multiple()
+                    ->preload()
+                    ->label('Cámaras involucradas'),
+                Forms\Components\Repeater::make('specialReportRequest')
+                    ->relationship('specialReportRequest')
+                    ->schema([
+                        Forms\Components\TextInput::make('sismo_register_id')
+                            ->label('Número de Solicitud')
+                            ->disabled(),
+                    ])
+                    ->label('Solicitudes de Informe Especial')
+                    ->collapsible()
+                    ->columnSpanFull(),
+
             ]);
     }
 
@@ -59,26 +97,37 @@ class ReportResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
+                    ->label('Identificador')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
-                    ->searchable(),
+                    ->label('Descripción')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('report_date')
+                    ->label('Fecha del Informe')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('report_time'),
+                Tables\Columns\TextColumn::make('report_time')
+                    ->label('Hora del Informe')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('location.address')
+                    ->label('Ubicación')
+                    ->limit(30)
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
+                    ->label('Creado por')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('policeStation.name')
-                    ->numeric()
+                    ->label('Dependencia ')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cause.cause_name')
-                    ->numeric()
+                    ->label('Causa ')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Creado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -87,6 +136,7 @@ class ReportResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
             ])

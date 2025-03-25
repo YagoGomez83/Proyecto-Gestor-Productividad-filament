@@ -13,6 +13,7 @@ class ApplicationForAdmission extends Model
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
     protected $fillable = [
+        'date_solicitude',
         'name',
         'user_id',
         'police_hierarchy',

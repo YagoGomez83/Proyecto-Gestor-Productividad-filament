@@ -17,8 +17,8 @@ class ServiceResource extends Resource
 {
     protected static ?string $model = Service::class;
     protected static ?string $navigationLabel = "Servicios";
-    protected static ?string $navigationGroup = 'IGE';
-    protected static ?int $navigationSort = 4;
+    protected static ?string $navigationGroup = 'Supervisor';
+    protected static ?int $navigationSort = 1;
     protected static ?string $navigationIcon = 'heroicon-s-pencil-square';
 
     public static function form(Form $form): Form
@@ -129,11 +129,11 @@ class ServiceResource extends Resource
                     ->label('Ciudad')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('initialPoliceMovementCode.code')
+                Tables\Columns\TextColumn::make('initialPoliceMovementCode.description')
                     ->label('Código de desplazamiento inicial')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('finalPoliceMovementCode.code')
+                Tables\Columns\TextColumn::make('finalPoliceMovementCode.description')
                     ->label('Código de desplazamiento final')
                     ->numeric()
                     ->sortable(),
@@ -148,6 +148,7 @@ class ServiceResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])

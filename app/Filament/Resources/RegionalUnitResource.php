@@ -44,7 +44,7 @@ class RegionalUnitResource extends Resource
                     ->searchable()
                     ->label('nombre'),
                 Tables\Columns\TextColumn::make('center.name')
-                    ->numeric()
+                    ->searchable()
                     ->label('Centro')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')

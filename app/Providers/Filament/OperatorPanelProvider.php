@@ -33,7 +33,7 @@ class OperatorPanelProvider extends PanelProvider
             ->id('operator')
             ->path('operator')
             ->login()
-            ->authMiddleware([Authenticate::class, 'role:operator|coordinator|supervisor'])
+            ->authMiddleware([Authenticate::class, 'role:operator'])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -53,8 +53,7 @@ class OperatorPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Operator/Pages'), for: 'App\\Filament\\Operator\\Pages')
             ->resources([
                 WorkSessionResource::class,
-                CameraResource::class,
-                UserResource::class,
+
 
 
             ])

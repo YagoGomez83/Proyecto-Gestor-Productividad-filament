@@ -129,11 +129,11 @@ class ServiceResource extends Resource
                     ->label('Ciudad')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('initialPoliceMovementCode.code')
+                Tables\Columns\TextColumn::make('initialPoliceMovementCode.description')
                     ->label('Código de desplazamiento inicial')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('finalPoliceMovementCode.code')
+                Tables\Columns\TextColumn::make('finalPoliceMovementCode.description')
                     ->label('Código de desplazamiento final')
                     ->numeric()
                     ->sortable(),

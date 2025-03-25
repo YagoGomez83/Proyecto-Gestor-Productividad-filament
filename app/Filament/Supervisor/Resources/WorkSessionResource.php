@@ -19,8 +19,10 @@ class WorkSessionResource extends Resource
 {
     protected static ?string $model = WorkSession::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    protected static ?string $navigationIcon = 'heroicon-o-clock';
+    protected static ?string $navigationLabel = 'Descansos';
+    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationGroup = 'Supervisor';
     protected function getElocuentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('group_id', Auth::user()->group_id)->orderBy('start_time', 'desc');
@@ -74,6 +76,7 @@ class WorkSessionResource extends Resource
                     ->sortable(),
                 //
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('type')->options([
                     'work' => 'Work',

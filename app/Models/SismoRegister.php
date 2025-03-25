@@ -19,6 +19,7 @@ class SismoRegister extends Model
         'date_solicitude',
         'solicitud_number',
         'solicitude_type_id',
+        'solicitud_number_note',
         'description',
         'cause_id',
         'center_id',
