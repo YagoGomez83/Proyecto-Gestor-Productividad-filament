@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Reception\Resources;
 
-use App\Filament\Resources\VictimResource\Pages;
-use App\Filament\Resources\VictimResource\RelationManagers;
-use App\Models\Victim;
+use App\Filament\Reception\Resources\CityResource\Pages;
+use App\Filament\Reception\Resources\CityResource\RelationManagers;
+use App\Models\City;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,31 +13,26 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class VictimResource extends Resource
+class CityResource extends Resource
 {
-    protected static ?string $model = Victim::class;
-
-    protected static ?string $navigationGroup = 'Policial';
-    protected static ?string $navigationLabel = 'Damnificado';
-    protected static ?string $navigationIcon = 'heroicon-o-user';
-    protected static ?int $navigationSort = 9;
-
+    protected static ?string $model = City::class;
+    protected static ?string $navigationLabel = 'Ciudades';
+    protected static ?string $navigationGroup = 'Ubicaciones';
+    protected static ?int $navigationSort = 3;
+    protected static ?string $navigationIcon = 'heroicon-o-map';
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->required()
                     ->label('Nombre')
-                    ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('lastName')
-                    ->label('Apellido')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('dni')
-                    ->label('DNI')
-                    ->maxLength(255),
-
+                Forms\Components\Select::make('regional_unit_id')
+                    ->relationship('regionalUnit', 'name')
+                    ->label('Unidad Regional')
+                    ->required(),
+                //
             ]);
     }
 
@@ -47,24 +42,29 @@ class VictimResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombre')
+                    ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('lastName')
-                    ->label('Apellido')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('dni')
-                    ->label('DNI')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('regionalUnit.name')
+                    ->label('Unidad Regional')
+                    ->numeric()
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Creado')
                     ->dateTime()
                     ->sortable()
+                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Actualizado')
                     ->dateTime()
                     ->sortable()
+                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                //
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make(),
+                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -74,8 +74,6 @@ class VictimResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
                 ]),
             ]);
     }
@@ -90,17 +88,9 @@ class VictimResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListVictims::route('/'),
-            'create' => Pages\CreateVictim::route('/create'),
-            'edit' => Pages\EditVictim::route('/{record}/edit'),
+            'index' => Pages\ListCities::route('/'),
+            'create' => Pages\CreateCity::route('/create'),
+            'edit' => Pages\EditCity::route('/{record}/edit'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
     }
 }

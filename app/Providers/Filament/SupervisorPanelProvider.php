@@ -2,12 +2,7 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Supervisor\Resources\ServiceResource\Widgets\ServiceChart;
-use App\Filament\Supervisor\Resources\ServiceResource\Widgets\ServiceChartReactive;
-use App\Filament\Supervisor\Resources\ServiceResource\Widgets\ServicePie;
-use App\Filament\Supervisor\Resources\ServiceResource\Widgets\ServiceStats;
-use App\Filament\Supervisor\Resources\WokSessionResource\Widgets\WorkSession;
-use App\Filament\Supervisor\Resources\WorkSessionResource\Widgets\WorkSessionTable;
+use App\Filament\Supervisor\Resources\ReportResource\Widgets\ReportCauseTable;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -24,6 +19,17 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use App\Filament\Supervisor\Resources\ReportResource\Widgets\ReportChart;
+use App\Filament\Supervisor\Resources\ReportResource\Widgets\ReportPoliceStationTable;
+use App\Filament\Supervisor\Resources\ServiceResource\Widgets\ServicePie;
+use App\Filament\Supervisor\Resources\ServiceResource\Widgets\ServiceChart;
+use App\Filament\Supervisor\Resources\ServiceResource\Widgets\ServiceStats;
+use App\Filament\Supervisor\Resources\WokSessionResource\Widgets\WorkSession;
+use App\Filament\Supervisor\Resources\ReportResource\Widgets\ReportsByCauseChart;
+use App\Filament\Supervisor\Resources\ReportResource\Widgets\ReportsByPoliceStationChart;
+use App\Filament\Supervisor\Resources\ServiceResource\Widgets\ServiceChartReactive;
+use App\Filament\Supervisor\Resources\WorkSessionResource\Widgets\WorkSessionTable;
+use App\Http\Middleware\HandlePanelAccess;
 
 class SupervisorPanelProvider extends PanelProvider
 {
@@ -61,6 +67,10 @@ class SupervisorPanelProvider extends PanelProvider
                 ServiceChart::class,
                 ServiceChartReactive::class,
                 ServicePie::class,
+                ReportsByCauseChart::class,
+                ReportsByPoliceStationChart::class,
+                ReportCauseTable::class,
+                ReportPoliceStationTable::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -72,6 +82,7 @@ class SupervisorPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                HandlePanelAccess::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

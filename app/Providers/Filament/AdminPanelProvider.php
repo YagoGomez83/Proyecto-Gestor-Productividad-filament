@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Filament\Resources\UserResource;
 use Filament\Http\Middleware\Authenticate;
 use App\Filament\Resources\AccusedResource;
+use App\Http\Middleware\HandlePanelAccess;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -41,6 +42,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                HandlePanelAccess::class,
             ])
             ->default()
             ->colors([
