@@ -17,9 +17,9 @@ return new class extends Migration
             $table->string('name');
             $table->unsignedBigInteger('user_id');
             $table->string('police_hierarchy');
-            $table->unsignedInteger('cause_id');
-            $table->unsignedInteger('police_station_id');
-            $table->unsignedInteger('center_id');
+            $table->unsignedBigInteger('cause_id');
+            $table->unsignedBigInteger('police_station_id');
+            $table->unsignedBigInteger('center_id');
             $table->text('observations');
             $table->foreign('cause_id')->references('id')->on('causes');
             $table->foreign('police_station_id')->references('id')->on('police_stations');

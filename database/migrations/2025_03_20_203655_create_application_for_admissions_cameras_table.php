@@ -13,9 +13,19 @@ return new class extends Migration
     {
         Schema::create('application_for_admissions_cameras', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('application_for_admission_id')->constrained()->onDelete('cascade');
-            $table->foreignId('camera_id')->constrained()->onDelete('cascade');
-            $table->timestamps();
+    $table->unsignedBigInteger('application_id'); // Cambiar el nombre de la columna
+    $table->unsignedBigInteger('camera_id');
+
+    // Definir claves foráneas con nombres más cortos
+    $table->foreign('application_id', 'app_adm_cam_fk')
+          ->references('id')->on('application_for_admissions')
+          ->onDelete('cascade');
+
+    $table->foreign('camera_id', 'cam_app_fk')
+          ->references('id')->on('cameras')
+          ->onDelete('cascade');
+
+    $table->timestamps();
         });
     }
 

@@ -16,18 +16,19 @@ class WorkSessionTable extends BaseWidget
     {
         // Consulta para obtener los registros
         $query = WorkSession::query()
-            ->with(['user', 'group'])
-            ->where('group_id', Auth::user()->group_id)
-            ->selectRaw('
-            (user_id || \'-\' || group_id || \'-\' || work_date) AS id,
+        ->with(['user', 'group'])
+        ->where('group_id', Auth::user()->group_id)
+        ->selectRaw('
+            CONCAT(user_id, "-", group_id, "-", work_date) AS id,
             work_date, 
             user_id, 
             group_id,
-            SUM(CASE WHEN type = \'work\' THEN EXTRACT(EPOCH FROM (end_time - start_time)) / 60 ELSE 0 END) AS total_work_time,
-            SUM(CASE WHEN type = \'pause\' THEN EXTRACT(EPOCH FROM (end_time - start_time)) / 60 ELSE 0 END) AS total_pause_time
+            SUM(CASE WHEN type = "work" THEN TIMESTAMPDIFF(MINUTE, start_time, end_time) ELSE 0 END) AS total_work_time,
+            SUM(CASE WHEN type = "pause" THEN TIMESTAMPDIFF(MINUTE, start_time, end_time) ELSE 0 END) AS total_pause_time
         ')
-            ->groupBy('user_id', 'group_id', 'work_date')
-            ->orderBy('work_date', 'desc');
+        ->groupBy('user_id', 'group_id', 'work_date')
+        ->orderBy('work_date', 'desc');
+    
 
 
 
