@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Supervisor\Resources;
 
-use App\Filament\Resources\VictimResource\Pages;
-use App\Filament\Resources\VictimResource\RelationManagers;
+use App\Filament\Supervisor\Resources\VictimResource\Pages;
+use App\Filament\Supervisor\Resources\VictimResource\RelationManagers;
 use App\Models\Victim;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,8 +15,6 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class VictimResource extends Resource
 {
-    protected static ?string $model = Victim::class;
-
     protected static ?string $navigationGroup = 'Policial';
     protected static ?string $navigationLabel = 'Damnificado';
     protected static ?string $navigationIcon = 'heroicon-o-user';
@@ -38,6 +36,7 @@ class VictimResource extends Resource
                     ->label('DNI')
                     ->maxLength(255),
 
+                //
             ]);
     }
 
@@ -62,9 +61,10 @@ class VictimResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                //
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make(),
+                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -74,8 +74,6 @@ class VictimResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
                 ]),
             ]);
     }
@@ -94,13 +92,5 @@ class VictimResource extends Resource
             'create' => Pages\CreateVictim::route('/create'),
             'edit' => Pages\EditVictim::route('/{record}/edit'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
     }
 }
