@@ -1,5 +1,10 @@
 <?php
 
+use App\Providers\Filament\AdminPanelProvider;
+use App\Providers\Filament\OperatorPanelProvider;
+use App\Providers\Filament\ReceptionPanelProvider;
+use App\Providers\Filament\SupervisorPanelProvider;
+
 return [
 
     /*
@@ -13,7 +18,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'sismo'),
+    'name' => env('APP_NAME', 'Sismo'),
 
     /*
     |--------------------------------------------------------------------------

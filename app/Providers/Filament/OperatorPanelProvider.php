@@ -20,6 +20,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Operator\Resources\WorkSessionResource;
 use App\Filament\Operator\Resources\WorkSessionResource\Widgets\WorkSessionCart;
 use App\Filament\Operator\Widgets\WorkSessionsChart as WidgetsWorkSessionsChart;
+use App\Http\Middleware\HandlePanelAccess;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -44,6 +45,7 @@ class OperatorPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+
             ])
             ->default()
             ->colors([
@@ -76,6 +78,7 @@ class OperatorPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                HandlePanelAccess::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

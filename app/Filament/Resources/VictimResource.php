@@ -36,8 +36,8 @@ class VictimResource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('dni')
                     ->label('DNI')
-                    ->required()
                     ->maxLength(255),
+
             ]);
     }
 

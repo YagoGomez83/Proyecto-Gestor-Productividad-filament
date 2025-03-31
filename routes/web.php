@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 // })->middleware('auth')->name('dashboard');
 Route::get('/', function () {
     return view('public.home');
-});
+})->name('home');
 
 Route::middleware(['auth', 'role:coordinator|supervisor'])->group(function () {
     Route::get('/admin/cameras/custom', [CameraController::class, 'index'])->name('cameras.custom');

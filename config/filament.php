@@ -85,5 +85,25 @@ return [
     */
 
     'livewire_loading_delay' => 'default',
+    'panels' => [
+        'admin' => [
+            'path' => 'admin',
+            'auth' => [
+                'guard' => 'web',
+            ],
+        ],
+        'supervisor' => [
+            'path' => 'supervisor',
+            'auth' => [
+                'guard' => 'web',
+            ],
+        ],
+        'operator' => [
+            'path' => 'operator',
+            'auth' => [
+                'guard' => 'web',
+            ],
+        ],
+    ],
 
 ];

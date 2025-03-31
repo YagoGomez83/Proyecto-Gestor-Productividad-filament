@@ -15,7 +15,10 @@ class Dashboard extends Page
 
     public function mount(): void
     {
-        $this->authorizeRoleBasedWidgets();
+        if (!Auth::user()->hasRole(['coordinator'])) {
+            Auth::logout();
+            redirect('/')->with('error', 'No tienes acceso al panel de administración.');
+        }
     }
 
     public function authorizeRoleBasedWidgets()
