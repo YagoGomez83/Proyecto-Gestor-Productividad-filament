@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 class SismoRegisterByCause extends BaseWidget
 {
     protected int | string | array $columnSpan = 'full';
-    protected static ?string $heading = 'Informes Especiales por Causa';
+    protected static ?string $heading = 'Informes Especiales por Tipo de Solicitud';
     public array $filters = [];
 
     public function table(Table $table): Table

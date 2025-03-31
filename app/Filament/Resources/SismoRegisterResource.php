@@ -10,6 +10,7 @@ use App\Models\SismoRegister;
 use Filament\Resources\Resource;
 use App\Filament\Resources\SismoRegisterResource\Pages;
 use App\Filament\Resources\SismoRegisterResource\RelationManagers;
+use App\Filament\Resources\SismoRegisterResource\Widgets\ExportRegistersByPoliceStation;
 
 class SismoRegisterResource extends Resource
 {
@@ -158,6 +159,11 @@ class SismoRegisterResource extends Resource
 
                 Forms\Components\Textarea::make('description')
                     ->label('Observaciones'),
+                Forms\Components\ToggleButtons::make('complete')
+                    ->label('Entregado')
+                    ->inline()
+                    ->boolean(),
+
 
             ]);
     }
@@ -203,6 +209,10 @@ class SismoRegisterResource extends Resource
                     ->label('Causa')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\IconColumn::make('complete')
+                    ->label('Entregado')
+                    ->sortable()
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Creado')
                     ->sortable()
@@ -229,6 +239,12 @@ class SismoRegisterResource extends Resource
             RelationManagers\CameraExportRelationManager::class,
         ];
     }
+    // public static function getWidgets(): array
+    // {
+    //     return [
+    //         ExportRegistersByPoliceStation::class,
+    //     ];
+    // }
 
     public static function getPages(): array
     {

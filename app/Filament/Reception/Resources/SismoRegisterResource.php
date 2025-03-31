@@ -160,6 +160,10 @@ class SismoRegisterResource extends Resource
 
                 Forms\Components\Textarea::make('description')
                     ->label('Observaciones'),
+                Forms\Components\ToggleButtons::make('complete')
+                    ->label('Entregado')
+                    ->inline()
+                    ->boolean(),
                 //
             ]);
     }
@@ -205,6 +209,10 @@ class SismoRegisterResource extends Resource
                     ->label('Causa')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\IconColumn::make('complete')
+                    ->label('Entregado')
+                    ->sortable()
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Creado')
                     ->sortable()

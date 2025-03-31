@@ -24,7 +24,8 @@ class SismoRegister extends Model
         'cause_id',
         'center_id',
         'police_station_id',
-        'user_id'
+        'user_id',
+        'complete',
     ];
 
     public function solicitudeType(): BelongsTo

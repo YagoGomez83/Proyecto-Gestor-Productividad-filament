@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\ExportRegistersByPoliceStation;
 use App\Filament\Reception\Resources\SismoRegisterResource\Widgets\SismoRegisterByCause;
 use App\Filament\Reception\Resources\SismoRegisterResource\Widgets\SismoRegisterByPoliceStation;
 use Filament\Pages;
@@ -55,6 +56,7 @@ class ReceptionPanelProvider extends PanelProvider
             ->widgets([
                 SismoRegisterByCause::class,
                 SismoRegisterByPoliceStation::class,
+                ExportRegistersByPoliceStation::class,
             ])
             ->middleware([
                 EncryptCookies::class,
