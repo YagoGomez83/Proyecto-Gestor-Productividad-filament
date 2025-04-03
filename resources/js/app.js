@@ -1,3 +1,4 @@
+// resources/js/app.js
 import "./bootstrap";
 import "tailwindcss/tailwind.css";
 import L from 'leaflet';
@@ -7,13 +8,13 @@ import 'leaflet/dist/leaflet.css';
 
 // Exportar Leaflet y Chart.js al scope global
 window.L = L;
-window.Leaflet = L; // Doble referencia para compatibilidad
+window.Leaflet = L;
 window.Chart = Chart;
 
-console.log('Leaflet cargado:', L);
-console.log('Chart.js cargado:', Chart);
+// Importar e inicializar heatmap
+import initializeHeatmap from './heatmap/initHeatmap';
 
-// Función para inicializar mapas de forma consistente
+// Función para inicializar mapas
 window.initMap = function(mapId, center = [-33.2951, -66.3379], zoom = 14) {
     if (!window.L) {
         console.error('Leaflet no está disponible');
@@ -28,3 +29,8 @@ window.initMap = function(mapId, center = [-33.2951, -66.3379], zoom = 14) {
 
     return map;
 };
+
+// Exportar la función de heatmap al scope global si es necesario
+window.initializeHeatmap = initializeHeatmap;
+
+console.log('Aplicación inicializada:', { L, Chart, initializeHeatmap });

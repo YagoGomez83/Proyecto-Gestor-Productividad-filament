@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Dashboard Público')</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js']) 
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>@yield('title', 'Dashboard') - Analítica de Video</title>
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @stack('styles')
+    </head>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
     <!-- Header -->
@@ -27,5 +30,6 @@
     <footer class="bg-gray-800 text-white py-4 text-center">
         <p>&copy; {{ date('Y') }} SISMO. Todos los derechos reservados.</p>
     </footer>
+    @stack('scripts')
 </body>
 </html>

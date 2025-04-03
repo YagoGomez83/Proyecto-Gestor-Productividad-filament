@@ -37,10 +37,7 @@ class Camera extends Model
         return $this->belongsTo(City::class);
     }
 
-    public function cameras(): HasMany
-    {
-        return $this->hasMany(Camera::class);
-    }
+ 
 
     public function reports()
     {
@@ -54,5 +51,8 @@ class Camera extends Model
     public function applicationForAdmissions(): BelongsToMany
     {
         return $this->belongsToMany(ApplicationForAdmission::class, 'application_for_admissions_cameras');
+    }
+    public function services():HasMany{
+        return $this->hasMany(Service::class);
     }
 }

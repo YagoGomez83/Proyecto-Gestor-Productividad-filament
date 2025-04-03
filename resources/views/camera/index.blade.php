@@ -23,6 +23,7 @@
             Agregar Cámara
         </a>
         <a href="{{ route('cameras.deleted') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md mb-6">Camaras eliminadas</a>
+        <a href="{{ route('cameras.heatmap') }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-md mb-6">Mapa de Calor</a>
     </div>
 
     <table class="table-auto w-full border-collapse border border-gray-200">
