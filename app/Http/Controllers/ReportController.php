@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Report;
 use Illuminate\Http\Request;
 use App\Services\CityService;
 use App\Services\CauseService;
@@ -143,5 +144,68 @@ class ReportController extends Controller
         $this->reportService->deleteReport($id);
 
         return redirect()->route('reports.custom')->with('success', 'Report deleted successfully.');
+    }
+
+    public function showHeatmap()
+    {
+        // Obtener datos iniciales para el mapa (puedes ajustar esto)
+        $initialData = Report::with('location')
+            ->whereHas('location', function($q) {
+                $q->whereNotNull('latitude')
+                  ->whereNotNull('longitude');
+            })
+            ->limit(1000) // Limitar para no sobrecargar el render inicial
+            ->get()
+            ->map(function($report) {
+                return [
+                    'lat' => (float)$report->location->latitude,
+                    'lng' => (float)$report->location->longitude,
+                    'intensity' => 1 // Puedes ajustar esto según algún criterio
+                ];
+            });
+    
+        $causes = $this->causeService->getAllCauses();
+    
+        return view('reports.heatmap', [
+            'heatmapData' => $initialData,
+            'causes' => $causes
+        ]);
+    }
+    
+    public function heatmapData(Request $request)
+    {
+        $query = Report::with('location')
+            ->whereHas('location', function($q) {
+                $q->whereNotNull('latitude')
+                  ->whereNotNull('longitude');
+            });
+    
+        // Filtro por causa
+        if ($request->has('cause') && $request->cause) {
+            $query->where('cause_id', $request->cause);
+        }
+    
+        // Filtro por fecha
+        if ($request->has('date') && $request->date) {
+            $query->whereDate('report_date', $request->date);
+        }
+    
+        // Filtro por rango de horas
+        if ($request->has('start_time') && $request->has('end_time')) {
+            $query->whereTime('report_time', '>=', $request->start_time)
+                  ->whereTime('report_time', '<=', $request->end_time);
+        }
+    
+        $reports = $query->get();
+    
+        $heatmapData = $reports->map(function($report) {
+            return [
+                'lat' => (float)$report->location->latitude,
+                'lng' => (float)$report->location->longitude,
+                'intensity' => 1 // Puedes ajustar esto según la gravedad o tipo de reporte
+            ];
+        });
+    
+        return response()->json($heatmapData);
     }
 }

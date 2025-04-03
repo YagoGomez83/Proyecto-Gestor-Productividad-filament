@@ -5,99 +5,62 @@
 @section('content')
 <div class="bg-white p-6 rounded-lg shadow-md">
     <h2 class="text-2xl font-bold mb-4">{{ $report->title }}</h2>
-    <p><strong>Fecha:</strong> {{ $report->report_date }}</p>
-    <p><strong>Hora:</strong> {{ $report->report_time }}</p>
-    <p><strong>Descripción:</strong> {{ $report->description }}</p>
-    <p><strong>Ubicación:</strong> {{ $report->location->address }}</p>
-    <p><strong>Causa:</strong> {{ $report->cause->cause_name }}</p>
-    <p><strong>Dependencia:</strong> {{ $report->policeStation->name }}</p>
-
-    <hr class="my-4">
-    <hr class="my-4">
-
-    {{-- Mapa --}}
-    <h3 class="text-xl font-bold mb-4">Mapa de la Ubicación:</h3>
-    <div id="map" style="height: 400px;" class="mb-4"></div>
-
-    <hr class="my-4">
-
-    {{-- Vehículos involucrados --}}
-    <h3 class="text-xl font-bold">Vehículos Involucrados:</h3>
-    @if($report->vehicles->isNotEmpty())
-        <ul class="list-disc ml-6">
-            @foreach($report->vehicles as $vehicle)
-                <li>{{ $vehicle->brand }} {{ $vehicle->model }} ({{ $vehicle->plate_number }})</li>
-            @endforeach
-        </ul>
-    @else
-        <p>No hay vehículos involucrados en este informe.</p>
-    @endif
-
-    <hr class="my-4">
-
-    {{-- Cámaras asociadas --}}
-    <h3 class="text-xl font-bold">Cámaras Asociadas:</h3>
-    @if($report->cameras->isNotEmpty())
-        <ul class="list-disc ml-6">
-            @foreach($report->cameras as $camera)
-                <li>Cámara ID: {{ $camera->identifier }} </li>
-            @endforeach
-        </ul>
-    @else
-        <p>No hay cámaras asociadas a este informe.</p>
-    @endif
-
-    <hr class="my-4">
-
-    {{-- Víctimas --}}
-    <h3 class="text-xl font-bold">Víctimas:</h3>
-    @if($report->victims->isNotEmpty())
-        <ul class="list-disc ml-6">
-            @foreach($report->victims as $victim)
-                <li>{{ $victim->name }} - {{ $victim->lastName }} años</li>
-            @endforeach
-        </ul>
-    @else
-        <p>No hay víctimas asociadas a este informe.</p>
-    @endif
-
-    <hr class="my-4">
-
-    {{-- Acusados --}}
-    <h3 class="text-xl font-bold">Acusados:</h3>
-    @if($report->accuseds->isNotEmpty())
-        <ul class="list-disc ml-6">
-            @foreach($report->accuseds as $accused)
-                <li>{{ $accused->name }}  {{ $accused->lastName }} - ({{ $accused->nickName }})</li>
-            @endforeach
-        </ul>
-    @else
-        <p>No hay acusados asociados a este informe.</p>
-    @endif
-    <div class="my-5 mx-auto w-full p-3">
-        <a href="{{ route('reports.custom') }}" class="text-blue-600 text-center text-sm hover:text-blue-700 uppercase block hover:underline">Volver</a>
+    
+    <!-- Información básica -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+            <p><strong>Fecha:</strong> {{ $report->report_date->format('d/m/Y') }}</p>
+            <p><strong>Hora:</strong> {{ $report->report_time->format('H:i') }}</p>
+            <p><strong>Descripción:</strong> {{ $report->description }}</p>
         </div>
+        <div>
+            <p><strong>Ubicación:</strong> {{ $report->location->address }}</p>
+            <p><strong>Causa:</strong> {{ $report->cause->cause_name }}</p>
+            <p><strong>Dependencia:</strong> {{ $report->policeStation->name }}</p>
+        </div>
+    </div>
+
+    <!-- Mapa -->
+    <h3 class="text-xl font-bold mb-2">Ubicación en el mapa</h3>
+    <div id="map" style="height: 400px; width: 100%;" class="mb-6 border border-gray-200 rounded-md"></div>
+
+    <!-- Resto de tu contenido... -->
+    <div class="mt-4">
+        <a href="{{ route('reports.custom') }}" class="text-blue-600 hover:text-blue-800 hover:underline">
+            ← Volver a la lista
+        </a>
+    </div>
 </div>
-<!-- Agregar Script de Leaflet -->
+
+@push('scripts')
 <script>
-    // Coordenadas de la ubicación
-    var latitude = {{ $report->location->latitude }};
-    var longitude = {{ $report->location->longitude }};
+document.addEventListener("DOMContentLoaded", function() {
+    // Verificar si Leaflet está disponible
+    if (typeof L === 'undefined') {
+        console.error('Leaflet no está cargado');
+        return;
+    }
+
+    // Coordenadas del informe
+    const lat = {{ $report->location->latitude }};
+    const lng = {{ $report->location->longitude }};
 
     // Inicializar el mapa
-    var map = L.map('map').setView([latitude, longitude], 15);
+    const map = L.map('map').setView([lat, lng], 15);
 
-    // Agregar capa de mapa (OpenStreetMap)
+    // Añadir capa de OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Agregar marcador
-    L.marker([latitude, longitude])
+    // Añadir marcador
+    L.marker([lat, lng])
         .addTo(map)
-        .bindPopup("{{ $report->location->address }}")
+        .bindPopup("<b>Ubicación del informe</b><br>" + 
+                  "Lat: " + lat.toFixed(6) + "<br>" + 
+                  "Lng: " + lng.toFixed(6))
         .openPopup();
+});
 </script>
-
+@endpush
 @endsection

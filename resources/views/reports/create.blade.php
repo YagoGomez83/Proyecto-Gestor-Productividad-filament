@@ -2,8 +2,8 @@
 
 @section('title', 'Crear Informe')
 
-@section('content')<div class="bg-white p-6 rounded-lg shadow-md flex flex-col gap-5">
-        <h2 class="text-2xl font-bold mb-4">Crear un Nuevo Informe</h2>
+@section('content')
+<h2 class="text-2xl font-bold mb-4">Crear un Nuevo Informe</h2>
         @if ($errors->any())
             <div class="bg-red-500 text-white p-3 rounded-md">
                 <ul>
@@ -140,44 +140,105 @@
 
                 </div>
             </div>
+<div class="bg-white p-6 rounded-lg shadow-md flex flex-col gap-5">
+    <!-- ... (resto de tu formulario existente) ... -->
 
-            <div class="mx-auto my-2 p-5">
-                <label for="map" class="block text-gray-700 font-bold uppercase">Ubicación</label>
-                <div id="map" style="height: 400px;"></div>
-            </div>
-
-            <div class="flex flex-col gap-5 border-gray-300 w-full border mx-auto p-5 my-3 rounded-md bg-slate-100">
-                <div>
-                    <label for="latitude" class="block text-gray-700 font-bold uppercase">Latitud</label>
-                    <input type="text" id="latitude" name="latitude"
-                        class="w-full border-gray-400 rounded-md p-2 border bg-white" readonly required>
-                </div>
-                <div>
-                    <label for="longitude" class="block text-gray-700 font-bold uppercase">Longitud</label>
-                    <input type="text" id="longitude" name="longitude"
-                        class="w-full border-gray-400 rounded-md p-2 border bg-white" readonly required>
-                </div>
-                <div>
-                    <label for="address" class="block text-gray-700 font-bold uppercase">Dirección</label>
-                    <input type="text" id="address" name="address"
-                        class="w-full border-gray-400 rounded-md p-2 border bg-white" readonly required>
-                </div>
-            </div>
-
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer">Guardar</button>
-        </form>
+    <div class="mx-auto my-2 p-5 w-full">
+        <label for="map" class="block text-gray-700 font-bold uppercase">Ubicación</label>
+        <div id="map" style="height: 400px; width: 100%;" class="z-0"></div>
     </div>
 
-    <!-- Agregar Script de Leaflet -->
-    <script>
-       document.addEventListener("DOMContentLoaded", function() {
+    <!-- Campos de coordenadas -->
+    <div class="flex flex-col gap-5 border-gray-300 w-full border mx-auto p-5 my-3 rounded-md bg-slate-100">
+        <div>
+            <label for="latitude" class="block text-gray-700 font-bold uppercase">Latitud</label>
+            <input type="text" id="latitude" name="latitude"
+                class="w-full border-gray-400 rounded-md p-2 border bg-white" readonly required>
+        </div>
+        <div>
+            <label for="longitude" class="block text-gray-700 font-bold uppercase">Longitud</label>
+            <input type="text" id="longitude" name="longitude"
+                class="w-full border-gray-400 rounded-md p-2 border bg-white" readonly required>
+        </div>
+        <div>
+            <label for="address" class="block text-gray-700 font-bold uppercase">Dirección</label>
+            <input type="text" id="address" name="address"
+                class="w-full border-gray-400 rounded-md p-2 border bg-white" readonly required>
+        </div>
+    </div>
+
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer">Guardar</button>
+</form>
+</div>
+
+@push('scripts')
+<script>
+// Espera a que Leaflet esté disponible
+function waitForLeaflet(callback) {
+    if (window.L) {
+        callback();
+    } else {
+        setTimeout(() => waitForLeaflet(callback), 100);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+
+   
+
+    waitForLeaflet(function() {
+        // Inicializar el mapa
+        const map = initMap('map');
+        
+        if (!map) {
+            console.error('No se pudo inicializar el mapa');
+            return;
+        }
+
+        // Coordenadas de Plaza Pringles
+        const plazaPringlesLatLng = [-33.2920, -66.3340];
+
+        // Agregar marcador
+        const marker = L.marker(plazaPringlesLatLng, {
+            draggable: true
+        }).addTo(map)
+        .bindPopup('Arrastra el marcador a la ubicación correcta')
+        .openPopup();
+
+        // Inicializar campos con posición del marcador
+        updatePositionFields(plazaPringlesLatLng);
+
+        // Actualizar campos cuando se mueve el marcador
+        marker.on('dragend', function(e) {
+            const latlng = e.target.getLatLng();
+            updatePositionFields([latlng.lat, latlng.lng]);
+        });
+
+        // Función para actualizar los campos de posición
+        function updatePositionFields([lat, lng]) {
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+            
+            // Obtener dirección
+            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('address').value = data.display_name || 'Dirección no disponible';
+                })
+                .catch(error => {
+                    console.error('Error al obtener dirección:', error);
+                    document.getElementById('address').value = 'Error al obtener dirección';
+                });
+        }
+    });
+
+    // Resto de tu código para las cámaras...
     const cameraSearch = document.getElementById("cameraSearch");
     const cameraSelect = document.getElementById("cameras");
     const addCameraButton = document.getElementById("addCamera");
     const selectedCamerasList = document.getElementById("selectedCameras");
     const hiddenInputsContainer = document.getElementById("hiddenInputsContainer");
 
-    // Filtrar las opciones del select
     cameraSearch.addEventListener("input", function() {
         const searchValue = this.value.toLowerCase();
         Array.from(cameraSelect.options).forEach(option => {
@@ -185,7 +246,6 @@
         });
     });
 
-    // Agregar cámaras seleccionadas
     addCameraButton.addEventListener("click", function() {
         Array.from(cameraSelect.selectedOptions).forEach(option => {
             if (!document.getElementById(`camera-${option.value}`)) {
@@ -193,7 +253,6 @@
                 li.textContent = option.text;
                 li.id = `camera-${option.value}`;
 
-                // Botón para eliminar la cámara de la lista
                 const removeButton = document.createElement("button");
                 removeButton.textContent = " ❌";
                 removeButton.classList.add("ml-2", "text-red-500");
@@ -205,7 +264,6 @@
                 li.appendChild(removeButton);
                 selectedCamerasList.appendChild(li);
 
-                // Agregar un input oculto por cada cámara seleccionada
                 const hiddenInput = document.createElement("input");
                 hiddenInput.type = "hidden";
                 hiddenInput.name = "cameras[]";
@@ -216,43 +274,6 @@
         });
     });
 });
-        // Coordenadas de San Luis, Argentina
-        var sanLuisLat = -33.2951;
-        var sanLuisLng = -66.3379;
-
-        // Coordenadas de Plaza Pringles
-        var plazaPringlesLat = -33.2920;
-        var plazaPringlesLng = -66.3340;
-
-        // Inicializar el mapa centrado en San Luis con un nivel de zoom que se ajusta a la ciudad
-        var map = L.map('map').setView([sanLuisLat, sanLuisLng],
-        14); // El 14 es un nivel de zoom adecuado para ver la ciudad
-
-        // Cargar el mapa con OpenStreetMap
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        // Agregar un marcador en Plaza Pringles
-        var marker = L.marker([plazaPringlesLat, plazaPringlesLng]).addTo(map)
-            .bindPopup('Plaza Pringles, San Luis') // Opcional: mensaje emergente al hacer clic
-            .openPopup();
-
-        // Actualizar los campos de latitud, longitud y dirección cuando se mueva el marcador
-        marker.on('dragend', function(e) {
-            var latlng = e.target.getLatLng();
-            document.getElementById('latitude').value = latlng.lat;
-            document.getElementById('longitude').value = latlng.lng;
-
-            // Usar una API de geocodificación para obtener la dirección
-            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latlng.lat}&lon=${latlng.lng}&format=json`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('address').value = data.display_name;
-                });
-        });
-
-        // Hacer el marcador arrastrable
-        marker.dragging.enable();
-    </script>
+</script>
+@endpush
 @endsection

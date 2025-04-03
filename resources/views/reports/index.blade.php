@@ -19,6 +19,7 @@
             Crear Informe
         </a>
         <a href="{{ route('reports.deleted') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md mb-6">Informes eliminados</a>
+        <a href="{{ route('reports.heatmap') }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-md mb-6">Mapas de calor</a>
     </div>
     
     <h2 class="text-2xl font-bold mb-4">Mis Informes</h2>

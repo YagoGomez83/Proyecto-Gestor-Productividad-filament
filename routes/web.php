@@ -45,4 +45,7 @@ Route::middleware(['auth', 'role:coordinator|supervisor'])->group(function () {
     Route::get('/admin/report/{id}', [ReportController::class, 'show'])->name('report.show');
     Route::get('admin/reports/deleted', [ReportController::class, 'deteledReports'])->name('reports.deleted');
     Route::post('/admin/report/restore/{id}', [ReportController::class, 'restoreReport'])->name('report.restore');
+    // Mapa de calor
+    Route::get('/reports/heatmap', [ReportController::class, 'showHeatmap'])->name('reports.heatmap');
+    Route::get('/reports/heatmap/data', [ReportController::class, 'heatmapData'])->name('reports.heatmap.data');
 });
