@@ -2,10 +2,13 @@
 
 namespace App\Providers;
 
+use App\Services\HeatmapService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Repositories\HeatmapRepository;
 use Illuminate\Support\ServiceProvider;
 use BezhanSalleh\PanelSwitch\PanelSwitch;
+use App\Repositories\Contracts\HeatmapRepositoryInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,6 +17,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind(HeatmapRepositoryInterface::class, HeatmapRepository::class);
+        
+        $this->app->bind(HeatmapService::class, function ($app) {
+            return new HeatmapService($app->make(HeatmapRepositoryInterface::class));
+        });
         //
     }
 

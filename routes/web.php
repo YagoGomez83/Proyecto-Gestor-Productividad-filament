@@ -3,7 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CameraController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\HeatmapController;
 use App\Http\Controllers\CameraHeatmapController;
+use App\Http\Controllers\ServiceHeatmapController;
 
 // Route::view('/', 'public.index')->name('welcome');
 
@@ -47,9 +49,9 @@ Route::middleware(['auth', 'role:coordinator|supervisor'])->group(function () {
     Route::get('admin/reports/deleted', [ReportController::class, 'deteledReports'])->name('reports.deleted');
     Route::post('/admin/report/restore/{id}', [ReportController::class, 'restoreReport'])->name('report.restore');
     // Mapa de calor
-    Route::get('/reports/heatmap', [ReportController::class, 'showHeatmap'])->name('reports.heatmap');
-    Route::get('/reports/heatmap/data', [ReportController::class, 'heatmapData'])->name('reports.heatmap.data');
-    //Mapa de Calor camaras
-    Route::get('/cameras/heatmap', [CameraHeatmapController::class, 'index'])->name('cameras.heatmap');
-Route::get('/cameras/heatmap/data', [CameraHeatmapController::class, 'getHeatmapData'])->name('cameras.heatmap.data');
+    Route::get('/heatmap', [HeatmapController::class, 'index'])->name('heatmap.index');
+    Route::get('/api/heatmap-data', [HeatmapController::class, 'getHeatmapData'])->name('heatmap.data');
+    Route::get('/heatmap/services', [ServiceHeatmapController::class, 'index'])->name('heatmap.services');
+    Route::get('/api/heatmap-services-data', [ServiceHeatmapController::class, 'getHeatmapData'])->name('heatmap.services.data');
+   
 });

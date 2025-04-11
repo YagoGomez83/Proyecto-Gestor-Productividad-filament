@@ -1,81 +1,123 @@
 @extends('layouts.app')
-
-@section('title', 'Mapa de Calor de Reportes y Servicios')
-
-@push('styles')
-    <style>
-        /* Tus estilos existentes... */
-        
-        /* Nuevos estilos para el selector de tipo de mapa */
-        .map-type-selector {
-            margin-bottom: 20px;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        
-        .map-type-option {
-            display: inline-block;
-            margin-right: 10px;
-        }
-    </style>
-@endpush
-
+@section('title', 'Mapa de Calor de Infomes')
+    
+@endsection
 @section('content')
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-2">Mapa de Calor de Reportes y Servicios</h1>
-        <p class="text-gray-600">Visualización geográfica de la concentración de incidentes y servicios policiales</p>
-    </div>
+<div class="container mx-auto p-4">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Mapa de Calor de Reportes</h2>
 
-    <!-- Selector de tipo de mapa -->
-    <div class="map-type-selector">
-        <label for="mapTypeSelector" class="filter-label">Tipo de Mapa:</label>
-        <select id="mapTypeSelector" class="form-select">
-            <option value="reports">Reportes</option>
-            <option value="services">Servicios</option>
-        </select>
-    </div>
+    <form action="{{ route('heatmap.index') }}" method="GET" class="bg-white shadow-md rounded px-6 py-4 mb-6">
+        @csrf
+        <!-- Filtros para Cause, Dependency y Fechas -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+                <label for="cause_id" class="block text-gray-700 font-medium mb-2">Causa</label>
+                <select name="cause_id" id="cause_id" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="">Seleccione una causa</option>
+                    @foreach($causes as $cause)
+                        <option value="{{ $cause->id }}" {{ request('cause_id') == $cause->id ? 'selected' : '' }}>
+                            {{ $cause->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-    <!-- Filtros de Reportes (visible por defecto) -->
-    <div id="reportFilters">
-        @include('reports.partials.heatmap-report-filters')
-    </div>
+            <div>
+                <label for="dependence_id" class="block text-gray-700 font-medium mb-2">Dependencia</label>
+                <select name="dependence_id" id="dependence_id" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="">Seleccione una dependencia</option>
+                    @foreach($dependencies as $dependence)
+                        <option value="{{ $dependence->id }}" {{ request('dependence_id') == $dependence->id ? 'selected' : '' }}>
+                            {{ $dependence->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-    <!-- Filtros de Servicios (oculto inicialmente) -->
-    <div id="serviceFilters" style="display: none;">
-        @include('reports.partials.heatmap-service-filters')
-    </div>
+            <div>
+                <label for="start_date" class="block text-gray-700 font-medium mb-2">Fecha de Inicio</label>
+                <input type="date" name="start_date" id="start_date" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" value="{{ request('start_date') }}" />
+            </div>
 
-    <!-- Mapa -->
-    <div class="bg-white rounded-lg shadow-md p-4 relative">
-        <div class="mb-4 flex justify-between items-center">
-            <h2 class="text-lg font-semibold text-gray-700">Distribución Geográfica</h2>
-            <div class="text-sm text-gray-500">
-                <span id="pointsCount">{{ count($heatmapData) + count($serviceHeatmapData) }}</span> puntos mostrados
+            <div>
+                <label for="end_date" class="block text-gray-700 font-medium mb-2">Fecha de Fin</label>
+                <input type="date" name="end_date" id="end_date" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" value="{{ request('end_date') }}" />
             </div>
         </div>
-        <div id="mapReports"></div>
-        <div class="loading-spinner" id="loadingSpinner">
-            <!-- Tu spinner existente -->
-        </div>
-        <div class="mt-4 text-xs text-gray-500">
-            <p>Leyenda: 
-                <span class="text-blue-500">Reportes</span> | 
-                <span class="text-purple-500">Servicios</span>
-            </p>
-        </div>
-    </div>
-@endsection
 
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const heatmapData = @json($heatmapData ?? []);
-            const serviceHeatmapData = @json($serviceHeatmapData ?? []);
-            const route = '{{ route('reports.heatmap.data') }}';
-            
-            window.initializeHeatmap(heatmapData, serviceHeatmapData, route);
-        });
-    </script>
-@endpush
+        <div class="mt-4 text-right">
+            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                Filtrar
+            </button>
+        </div>
+    </form>
+
+    <div id="map" class="w-full rounded-lg shadow-lg" style="height: 500px;"></div>
+</div>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
+
+
+<script>
+    // Coordenadas predeterminadas (San Luis, Argentina)
+    const defaultLat = -33.301726;
+    const defaultLng = -66.337752;
+
+    // Datos del mapa de calor
+    const rawHeatData = @json($heatData);
+    const heatData = rawHeatData.map(point => {
+        if (point.length >= 4) {
+            return [
+                parseFloat(point[0]),
+                parseFloat(point[1]),
+                parseFloat(point[2]) * 5,
+                parseFloat(point[3])
+            ];
+        }
+        return null;
+    }).filter(Boolean); // Eliminar datos nulos
+
+    // Inicializar el mapa
+    const centerLat = heatData.length > 0 ? heatData[0][0] : defaultLat;
+    const centerLng = heatData.length > 0 ? heatData[0][1] : defaultLng;
+    const map = L.map('map').setView([centerLat, centerLng], 12);
+
+    // Capa base del mapa
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Agregar marcadores con enlaces
+    heatData.forEach(data => {
+        const marker = L.circleMarker([data[0], data[1]], {
+            radius:30,
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5
+        }).addTo(map);
+
+        marker.bindPopup(
+            `<a href="/reports/${data[3]}" class="text-blue-600 hover:underline">Ver Informe</a>`
+        );
+    });
+
+    // Agregar capa de calor si hay datos
+    if (heatData.length > 0) {
+        L.heatLayer(heatData, {
+            radius: 25,
+            blur: 15,
+            maxZoom: 18,
+            minOpacity: 0.5
+        }).addTo(map);
+    } else {
+        console.warn("No se encontraron datos para el mapa de calor.");
+    }
+</script>
+
+
+
+
+
+
+
+@endsection

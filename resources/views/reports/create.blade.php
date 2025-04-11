@@ -170,110 +170,97 @@
     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer">Guardar</button>
 </form>
 </div>
-
 @push('scripts')
+    
+
+
 <script>
-// Espera a que Leaflet esté disponible
-function waitForLeaflet(callback) {
-    if (window.L) {
-        callback();
-    } else {
-        setTimeout(() => waitForLeaflet(callback), 100);
-    }
-}
+    document.addEventListener("DOMContentLoaded", function() {
+ const cameraSearch = document.getElementById("cameraSearch");
+ const cameraSelect = document.getElementById("cameras");
+ const addCameraButton = document.getElementById("addCamera");
+ const selectedCamerasList = document.getElementById("selectedCameras");
+ const hiddenInputsContainer = document.getElementById("hiddenInputsContainer");
 
-document.addEventListener("DOMContentLoaded", function() {
+ // Filtrar las opciones del select
+ cameraSearch.addEventListener("input", function() {
+     const searchValue = this.value.toLowerCase();
+     Array.from(cameraSelect.options).forEach(option => {
+         option.style.display = option.text.toLowerCase().includes(searchValue) ? "block" : "none";
+     });
+ });
 
-   
+ // Agregar cámaras seleccionadas
+ addCameraButton.addEventListener("click", function() {
+     Array.from(cameraSelect.selectedOptions).forEach(option => {
+         if (!document.getElementById(`camera-${option.value}`)) {
+             const li = document.createElement("li");
+             li.textContent = option.text;
+             li.id = `camera-${option.value}`;
 
-    waitForLeaflet(function() {
-        // Inicializar el mapa
-        const map = initMap('map');
-        
-        if (!map) {
-            console.error('No se pudo inicializar el mapa');
-            return;
-        }
+             // Botón para eliminar la cámara de la lista
+             const removeButton = document.createElement("button");
+             removeButton.textContent = " ❌";
+             removeButton.classList.add("ml-2", "text-red-500");
+             removeButton.addEventListener("click", function() {
+                 li.remove();
+                 document.getElementById(`hidden-camera-${option.value}`).remove();
+             });
 
-        // Coordenadas de Plaza Pringles
-        const plazaPringlesLatLng = [-33.2920, -66.3340];
+             li.appendChild(removeButton);
+             selectedCamerasList.appendChild(li);
 
-        // Agregar marcador
-        const marker = L.marker(plazaPringlesLatLng, {
-            draggable: true
-        }).addTo(map)
-        .bindPopup('Arrastra el marcador a la ubicación correcta')
-        .openPopup();
-
-        // Inicializar campos con posición del marcador
-        updatePositionFields(plazaPringlesLatLng);
-
-        // Actualizar campos cuando se mueve el marcador
-        marker.on('dragend', function(e) {
-            const latlng = e.target.getLatLng();
-            updatePositionFields([latlng.lat, latlng.lng]);
-        });
-
-        // Función para actualizar los campos de posición
-        function updatePositionFields([lat, lng]) {
-            document.getElementById('latitude').value = lat;
-            document.getElementById('longitude').value = lng;
-            
-            // Obtener dirección
-            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('address').value = data.display_name || 'Dirección no disponible';
-                })
-                .catch(error => {
-                    console.error('Error al obtener dirección:', error);
-                    document.getElementById('address').value = 'Error al obtener dirección';
-                });
-        }
-    });
-
-    // Resto de tu código para las cámaras...
-    const cameraSearch = document.getElementById("cameraSearch");
-    const cameraSelect = document.getElementById("cameras");
-    const addCameraButton = document.getElementById("addCamera");
-    const selectedCamerasList = document.getElementById("selectedCameras");
-    const hiddenInputsContainer = document.getElementById("hiddenInputsContainer");
-
-    cameraSearch.addEventListener("input", function() {
-        const searchValue = this.value.toLowerCase();
-        Array.from(cameraSelect.options).forEach(option => {
-            option.style.display = option.text.toLowerCase().includes(searchValue) ? "block" : "none";
-        });
-    });
-
-    addCameraButton.addEventListener("click", function() {
-        Array.from(cameraSelect.selectedOptions).forEach(option => {
-            if (!document.getElementById(`camera-${option.value}`)) {
-                const li = document.createElement("li");
-                li.textContent = option.text;
-                li.id = `camera-${option.value}`;
-
-                const removeButton = document.createElement("button");
-                removeButton.textContent = " ❌";
-                removeButton.classList.add("ml-2", "text-red-500");
-                removeButton.addEventListener("click", function() {
-                    li.remove();
-                    document.getElementById(`hidden-camera-${option.value}`).remove();
-                });
-
-                li.appendChild(removeButton);
-                selectedCamerasList.appendChild(li);
-
-                const hiddenInput = document.createElement("input");
-                hiddenInput.type = "hidden";
-                hiddenInput.name = "cameras[]";
-                hiddenInput.value = option.value;
-                hiddenInput.id = `hidden-camera-${option.value}`;
-                hiddenInputsContainer.appendChild(hiddenInput);
-            }
-        });
-    });
+             // Agregar un input oculto por cada cámara seleccionada
+             const hiddenInput = document.createElement("input");
+             hiddenInput.type = "hidden";
+             hiddenInput.name = "cameras[]";
+             hiddenInput.value = option.value;
+             hiddenInput.id = `hidden-camera-${option.value}`;
+             hiddenInputsContainer.appendChild(hiddenInput);
+         }
+     });
+ });
 });
-</script>
+     // Coordenadas de San Luis, Argentina
+     var sanLuisLat = -33.2951;
+     var sanLuisLng = -66.3379;
+
+     // Coordenadas de Plaza Pringles
+     var plazaPringlesLat = -33.2920;
+     var plazaPringlesLng = -66.3340;
+
+     document.addEventListener('DOMContentLoaded', function() {
+     // Inicializar el mapa centrado en San Luis con un nivel de zoom que se ajusta a la ciudad
+     var map = L.map('map').setView([sanLuisLat, sanLuisLng],
+     14); // El 14 es un nivel de zoom adecuado para ver la ciudad
+
+     // Cargar el mapa con OpenStreetMap
+     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+     }).addTo(map);
+
+     // Agregar un marcador en Plaza Pringles
+     var marker = L.marker([plazaPringlesLat, plazaPringlesLng]).addTo(map)
+         .bindPopup('Plaza Pringles, San Luis') // Opcional: mensaje emergente al hacer clic
+         .openPopup();
+
+     // Actualizar los campos de latitud, longitud y dirección cuando se mueva el marcador
+     marker.on('dragend', function(e) {
+         var latlng = e.target.getLatLng();
+         document.getElementById('latitude').value = latlng.lat;
+         document.getElementById('longitude').value = latlng.lng;
+
+         // Usar una API de geocodificación para obtener la dirección
+         fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latlng.lat}&lon=${latlng.lng}&format=json`)
+             .then(response => response.json())
+             .then(data => {
+                 document.getElementById('address').value = data.display_name;
+             });
+     });
+
+     // Hacer el marcador arrastrable
+     marker.dragging.enable();
+    });
+ </script>
 @endpush
 @endsection

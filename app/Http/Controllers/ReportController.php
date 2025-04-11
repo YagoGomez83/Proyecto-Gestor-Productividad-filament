@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+
+use App\Models\Cause;
 use App\Models\Report;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use App\Models\PoliceStation;
 use App\Services\CityService;
 use App\Services\CauseService;
 use App\Services\CameraService;
@@ -150,168 +153,17 @@ class ReportController extends Controller
 
   // En ReportController.php
 
-  public function showHeatmap()
+  public function heatmap()
   {
-      // Datos iniciales para reportes
-      $initialReportData = Report::with('location')
-          ->whereHas('location', function($q) {
-              $q->whereNotNull('latitude')
-                ->whereNotNull('longitude');
-          })
-          ->limit(1000)
-          ->get()
-          ->map(function($report) {
-              return [
-                  'lat' => (float)$report->location->latitude,
-                  'lng' => (float)$report->location->longitude,
-                  'intensity' => 1
-              ];
-          });
+      $reports = Report::with(['location', 'cause', 'policeStation'])
+          ->whereHas('location')
+          ->get();
+      
+      $causes = Cause::all();
+      $policeStations = PoliceStation::all();
   
-      // Datos iniciales para servicios
-      $initialServiceData = Service::with(['camera.location', 'initialPoliceMovementCode'])
-          ->whereHas('camera.location', function($q) {
-              $q->whereNotNull('latitude')
-                ->whereNotNull('longitude');
-          })
-          ->limit(1000)
-          ->get()
-          ->groupBy('camera_id')
-          ->map(function($servicesByCamera) {
-              $camera = $servicesByCamera->first()->camera;
-              return [
-                  'lat' => (float)$camera->location->latitude,
-                  'lng' => (float)$camera->location->longitude,
-                  'intensity' => $servicesByCamera->count(),
-                  'type' => $servicesByCamera->first()->initialPoliceMovementCode->code,
-                  'camera_id' => $camera->id,
-                  'camera_identifier' => $camera->identifier,
-                  'count' => $servicesByCamera->count()
-              ];
-          })
-          ->values();
+     
   
-      $causes = $this->causeService->getAllCauses();
-      $policeStations = $this->policeStationService->getAll();
-      $policeMovementCodes = PoliceMovementCode::all(); // Asegúrate de importar el modelo
-  
-      return view('reports.heatmap', [
-          'heatmapData' => $initialReportData,
-          'serviceHeatmapData' => $initialServiceData,
-          'causes' => $causes,
-          'policeStations' => $policeStations,
-          'policeMovementCodes' => $policeMovementCodes
-      ]);
+      return view('reports.heatmap', compact('reports', 'causes', 'policeStations'));
   }
-
-public function heatmapData(Request $request)
-{
-    $type = $request->input('type', 'reports'); // 'reports' o 'services'
-
-    if ($type === 'services') {
-        return $this->getServiceHeatmapData($request);
-    }
-
-    return $this->getReportHeatmapData($request);
-}
-
-protected function getReportHeatmapData(Request $request)
-{
-    $query = Report::with('location')
-        ->whereHas('location', function($q) {
-            $q->whereNotNull('latitude')
-              ->whereNotNull('longitude');
-        });
-
-    // Filtros existentes...
-    if ($request->has('cause') && $request->cause) {
-        $query->where('cause_id', $request->cause);
-    }
-
-    if ($request->has('date') && $request->date) {
-        $query->whereDate('report_date', $request->date);
-    }
-
-    if ($request->has('start_time') && $request->has('end_time')) {
-        $query->whereTime('report_time', '>=', $request->start_time)
-              ->whereTime('report_time', '<=', $request->end_time);
-    }
-
-    $reports = $query->get();
-
-    $heatmapData = $reports->map(function($report) {
-        return [
-            'lat' => (float)$report->location->latitude,
-            'lng' => (float)$report->location->longitude,
-            'intensity' => 1
-        ];
-    });
-
-    return response()->json($heatmapData);
-}
-
-protected function getServiceHeatmapData(Request $request)
-{
-    $query = Service::with(['camera.location', 'initialPoliceMovementCode'])
-        ->whereHas('camera.location', function($q) {
-            $q->whereNotNull('latitude')
-              ->whereNotNull('longitude');
-        });
-
-    // Filtro por tipo de movimiento policial (preventivo/reactivo)
-    if ($request->has('service_type')) {
-        if ($request->service_type === 'preventive') {
-            $query->whereHas('initialPoliceMovementCode', function($q) {
-                $q->where('code', 'P');
-            });
-        } elseif ($request->service_type === 'reactive') {
-            $query->whereHas('initialPoliceMovementCode', function($q) {
-                $q->where('code', 'R');
-            });
-        }
-    }
-
-    // Nuevo filtro por código de movimiento policial específico
-    if ($request->has('initial_police_movement_code_id') && $request->initial_police_movement_code_id) {
-        $query->where('initial_police_movement_code_id', $request->initial_police_movement_code_id);
-    }
-
-    // Filtro por comisaría
-    if ($request->has('police_station_id') && $request->police_station_id) {
-        $query->whereHas('camera', function($q) use ($request) {
-            $q->where('police_station_id', $request->police_station_id);
-        });
-    }
-
-    // Filtros por fecha y hora
-    if ($request->has('date') && $request->date) {
-        $query->whereDate('service_date', $request->date);
-    }
-
-    if ($request->has('start_time') && $request->has('end_time')) {
-        $query->whereTime('service_time', '>=', $request->start_time)
-              ->whereTime('service_time', '<=', $request->end_time);
-    }
-
-    // Agrupar por cámara y contar servicios
-    $services = $query->get()
-        ->groupBy('camera_id')
-        ->map(function($servicesByCamera) {
-            $camera = $servicesByCamera->first()->camera;
-            $count = $servicesByCamera->count();
-            
-            return [
-                'lat' => (float)$camera->location->latitude,
-                'lng' => (float)$camera->location->longitude,
-                'intensity' => $count, // La intensidad ahora refleja el número de servicios
-                'type' => $servicesByCamera->first()->initialPoliceMovementCode->code,
-                'camera_id' => $camera->id,
-                'camera_identifier' => $camera->identifier,
-                'count' => $count
-            ];
-        })
-        ->values();
-
-    return response()->json($services);
-}
 }

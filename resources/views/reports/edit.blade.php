@@ -222,12 +222,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const initialLng = {{ $report->location->longitude }};
         
         // Inicializar el mapa
-        const map = initMap('map', [initialLat, initialLng]);
-        
-        if (!map) {
-            console.error('No se pudo inicializar el mapa');
-            return;
-        }
+        var map = L.map('map').setView([initialLat, initialLng],
+     14); // El 14 es un nivel de zoom adecuado para ver la ciudad
+
+     // Cargar el mapa con OpenStreetMap
+     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+     }).addTo(map);
 
         // Agregar marcador en la ubicación actual
         const marker = L.marker([initialLat, initialLng], {

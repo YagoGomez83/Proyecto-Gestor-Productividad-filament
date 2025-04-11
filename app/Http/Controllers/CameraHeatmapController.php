@@ -2,85 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Camera;
-use App\Models\Service;
-use App\Models\PoliceMovementCode;
+use App\Models\CameraType;
 
-class CameraHeatmapController extends Controller
+use Illuminate\Http\Request;
+use App\Http\Controllers\BaseHeatmapController;
+
+class CameraHeatmapController extends BaseHeatmapController
 {
-    public function index()
+    public function __construct()
     {
-        // Obtener datos iniciales para los filtros
-        $cameras = Camera::with('location')->get();
-        $statuses = ['Preventivo', 'Reactivo']; // Posibles valores de status
-        $codes = PoliceMovementCode::select('code', 'id','description')->get();
-        
-        // Obtener datos iniciales para el mapa de calor
-        $heatmapData = $this->getInitialHeatmapData();
-        
-        return view('camera.heatmap', compact('cameras', 'statuses', 'codes', 'heatmapData'));
+        $this->model = Camera::class;
+        $this->view = 'heatmaps.cameras';
+        $this->filters = [
+            'type_id' => ['field' => 'camera_type_id'],
+            'status' => ['field' => 'is_active'],
+            // Agrega más filtros según necesidad
+        ];
     }
     
-    protected function getInitialHeatmapData()
+    public function __invoke(Request $request)
     {
-        // Obtener servicios con cámaras que tienen ubicación
-        $services = Service::with(['camera.location', 'initialPoliceMovementCode'])
-            ->has('camera.location')
-            ->get();
+        $response = parent::__invoke($request);
         
-        $heatmapData = [];
-        foreach ($services as $service) {
-            if ($service->camera && $service->camera->location) {
-                $heatmapData[] = [
-                    'lat' => $service->camera->location->latitude,
-                    'lng' => $service->camera->location->longitude,
-                    'intensity' => 1,
-                    'camera_id' => $service->camera->id,
-                    'status' => $service->status,
-                    'code' => $service->initialPoliceMovementCode->code ?? null
-                ];
-            }
-        }
-        
-        return $heatmapData;
-    }
-    
-    public function getHeatmapData(Request $request)
-    {
-        // Consulta base para obtener servicios con cámaras que tienen ubicación
-        $query = Service::with(['camera.location', 'initialPoliceMovementCode'])
-            ->has('camera.location');
-            
-        // Aplicar filtros
-        if ($request->has('cameras') && !empty($request->cameras)) {
-            $query->whereIn('camera_id', $request->cameras);
-        }
-        
-        if ($request->has('status') && !empty($request->status)) {
-            $query->whereIn('status', $request->status);
-        }
-        
-        if ($request->has('codes') && !empty($request->codes)) {
-            $query->whereHas('initialPoliceMovementCode', function($q) use ($request) {
-                $q->whereIn('code', $request->codes);
-            });
-        }
-        
-        // Obtener servicios filtrados
-        $services = $query->get();
-        
-        $heatmapData = [];
-        foreach ($services as $service) {
-            if ($service->camera && $service->camera->location) {
-                $heatmapData[] = [
-                    'lat' => $service->camera->location->latitude,
-                    'lng' => $service->camera->location->longitude,
-                    'intensity' => 1
-                ];
-            }
-        }
-        
-        return response()->json($heatmapData);
+        // Agregar datos específicos para cámaras
+        return $response->with([
+            'types' => CameraType::all(),
+        ]);
     }
 }

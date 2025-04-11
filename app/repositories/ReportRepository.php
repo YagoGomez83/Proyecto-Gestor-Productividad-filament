@@ -94,8 +94,8 @@ class ReportRepository
             ->when($search, function ($query) use ($search) {
                 $query->whereRaw("LOWER(title) LIKE LOWER(?)", ["%$search%"])
                     ->orWhereRaw("LOWER(description) LIKE LOWER(?)", ["%$search%"])
-                    ->orWhereRaw("CAST(report_date AS TEXT) LIKE LOWER(?)", ["%$search%"]) // ✅ Conversión de fecha
-                    ->orWhereRaw("CAST(report_time AS TEXT) LIKE LOWER(?)", ["%$search%"]) // ✅ Conversión de hora
+                    ->orWhereRaw("CAST(report_date AS CHAR) LIKE LOWER(?)", ["%$search%"]) // ✅ Conversión de fecha
+                    ->orWhereRaw("CAST(report_time AS CHAR) LIKE LOWER(?)", ["%$search%"]) // ✅ Conversión de hora
                     ->orWhereHas('location', function ($q) use ($search) {
                         $q->whereRaw("LOWER(address) LIKE LOWER(?)", ["%$search%"]);
                     })
