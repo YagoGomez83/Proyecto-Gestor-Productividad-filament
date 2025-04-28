@@ -109,63 +109,46 @@
         <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer">Actualizar Cámara</button>
     </form>
 </div>
-
 @push('scripts')
 <script>
-// Espera a que Leaflet esté disponible
-function waitForLeaflet(callback) {
-    if (window.L) {
-        callback();
-    } else {
-        setTimeout(() => waitForLeaflet(callback), 100);
-    }
-}
+document.addEventListener('DOMContentLoaded', function() {
+    // Coordenadas actuales de la cámara
+    const initialLat = {{ $camera->location->latitude }};
+    const initialLng = {{ $camera->location->longitude }};
 
-document.addEventListener("DOMContentLoaded", function() {
-    waitForLeaflet(function() {
-        // Coordenadas actuales de la cámara
-        const initialLat = {{ $camera->location->latitude }};
-        const initialLng = {{ $camera->location->longitude }};
-        
-        // Inicializar el mapa
-        const map = initMap('map', [initialLat, initialLng]);
-        
-        if (!map) {
-            console.error('No se pudo inicializar el mapa');
-            return;
-        }
+    // Inicializar el mapa centrado en la ubicación de la cámara
+    var map = L.map('map').setView([initialLat, initialLng], 14);
 
-        // Agregar marcador en la ubicación actual
-        const marker = L.marker([initialLat, initialLng], {
-            draggable: true
-        }).addTo(map)
-        .bindPopup('Arrastra el marcador a la nueva ubicación')
-        .openPopup();
+    // Cargar capa de OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
-        // Actualizar campos cuando se mueve el marcador
-        marker.on('dragend', function(e) {
-            const latlng = e.target.getLatLng();
-            updatePositionFields([latlng.lat, latlng.lng]);
-        });
+    // Crear marcador arrastrable en la ubicación inicial
+    var marker = L.marker([initialLat, initialLng], {
+        draggable: true
+    }).addTo(map)
+    .bindPopup('Arrastra el marcador para actualizar la ubicación')
+    .openPopup();
 
-        // Función para actualizar los campos de posición
-        function updatePositionFields([lat, lng]) {
-            document.getElementById('latitude').value = lat;
-            document.getElementById('longitude').value = lng;
-            
-            // Obtener dirección
-            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('address').value = data.display_name || 'Dirección no disponible';
-                })
-                .catch(error => {
-                    console.error('Error al obtener dirección:', error);
-                    document.getElementById('address').value = 'Error al obtener dirección';
-                });
-        }
+    // Evento para actualizar los inputs cuando se mueve el marcador
+    marker.on('dragend', function(e) {
+        var latlng = e.target.getLatLng();
+        document.getElementById('latitude').value = latlng.lat;
+        document.getElementById('longitude').value = latlng.lng;
+
+        // Llamar a Nominatim para actualizar la dirección
+        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latlng.lat}&lon=${latlng.lng}&format=json`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('address').value = data.display_name;
+            })
+            .catch(error => {
+                console.error('Error al obtener la dirección:', error);
+            });
     });
 });
 </script>
 @endpush
+
 @endsection

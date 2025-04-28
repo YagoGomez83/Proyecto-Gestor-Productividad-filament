@@ -112,62 +112,46 @@
 
 @push('scripts')
 <script>
-// Espera a que Leaflet esté disponible
-function waitForLeaflet(callback) {
-    if (window.L) {
-        callback();
-    } else {
-        setTimeout(() => waitForLeaflet(callback), 100);
-    }
-}
+  // Coordenadas de San Luis, Argentina
+  var sanLuisLat = -33.2951;
+     var sanLuisLng = -66.3379;
 
-document.addEventListener("DOMContentLoaded", function() {
-    waitForLeaflet(function() {
-        // Inicializar el mapa
-        const map = initMap('map');
-        
-        if (!map) {
-            console.error('No se pudo inicializar el mapa');
-            return;
-        }
+     // Coordenadas de Plaza Pringles
+     var plazaPringlesLat = -33.2920;
+     var plazaPringlesLng = -66.3340;
 
-        // Coordenadas de Plaza Pringles
-        const plazaPringlesLatLng = [-33.2920, -66.3340];
+     document.addEventListener('DOMContentLoaded', function() {
+     // Inicializar el mapa centrado en San Luis con un nivel de zoom que se ajusta a la ciudad
+     var map = L.map('map').setView([sanLuisLat, sanLuisLng],
+     14); // El 14 es un nivel de zoom adecuado para ver la ciudad
 
-        // Agregar marcador
-        const marker = L.marker(plazaPringlesLatLng, {
-            draggable: true
-        }).addTo(map)
-        .bindPopup('Arrastra el marcador a la ubicación correcta')
-        .openPopup();
+     // Cargar el mapa con OpenStreetMap
+     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+     }).addTo(map);
 
-        // Inicializar campos con posición del marcador
-        updatePositionFields(plazaPringlesLatLng);
+     // Agregar un marcador en Plaza Pringles
+     var marker = L.marker([plazaPringlesLat, plazaPringlesLng]).addTo(map)
+         .bindPopup('Plaza Pringles, San Luis') // Opcional: mensaje emergente al hacer clic
+         .openPopup();
 
-        // Actualizar campos cuando se mueve el marcador
-        marker.on('dragend', function(e) {
-            const latlng = e.target.getLatLng();
-            updatePositionFields([latlng.lat, latlng.lng]);
-        });
+     // Actualizar los campos de latitud, longitud y dirección cuando se mueva el marcador
+     marker.on('dragend', function(e) {
+         var latlng = e.target.getLatLng();
+         document.getElementById('latitude').value = latlng.lat;
+         document.getElementById('longitude').value = latlng.lng;
 
-        // Función para actualizar los campos de posición
-        function updatePositionFields([lat, lng]) {
-            document.getElementById('latitude').value = lat;
-            document.getElementById('longitude').value = lng;
-            
-            // Obtener dirección
-            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('address').value = data.display_name || 'Dirección no disponible';
-                })
-                .catch(error => {
-                    console.error('Error al obtener dirección:', error);
-                    document.getElementById('address').value = 'Error al obtener dirección';
-                });
-        }
+         // Usar una API de geocodificación para obtener la dirección
+         fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latlng.lat}&lon=${latlng.lng}&format=json`)
+             .then(response => response.json())
+             .then(data => {
+                 document.getElementById('address').value = data.display_name;
+             });
+     });
+
+     // Hacer el marcador arrastrable
+     marker.dragging.enable();
     });
-});
 </script>
 @endpush
 @endsection
