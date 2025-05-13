@@ -43,11 +43,11 @@ class CityResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombre')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable(['name']),
                 Tables\Columns\TextColumn::make('regionalUnit.name')
                     ->label('Unidad Regional')
                     ->numeric()
-                    ->searchable()
+                    ->searchable(['regional_unit_id'])
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Creado')

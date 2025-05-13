@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('groups')->insert([
-            'name' => 'Grupo 1',
+            'name' => 'Grupo A CCCSL',
             'center_id' => '1',
         ]);
 
@@ -68,6 +68,7 @@ class DatabaseSeeder extends Seeder
 
         // Llamar al seeder de roles y permisos
         $this->call(RolesAndPermissionsSeeder::class);
+        $this->call(RoleReceptionSeeder::class);
 
         // Asignar roles a los usuarios
         $admin->assignRole('coordinator');
