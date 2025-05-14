@@ -7,22 +7,15 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
-                'resources/js/app.js' // Solo app.js como entry point
+                'resources/js/app.js'
             ],
-            refresh: true,
+            refresh: true, // Esto es principalmente para desarrollo
         }),
     ],
-    build: {
-        manifest: true,
-        rollupOptions: {
-            output: {
-                entryFileNames: 'assets/[name].js',
-                chunkFileNames: 'assets/[name].js',
-                assetFileNames: 'assets/[name].[ext]'
-            }
-        }
-    },
-    optimizeDeps: {
-        include: ['leaflet', 'leaflet.heat', 'chart.js']
-    }
+    // No es estrictamente necesario definir 'build.manifest' aquí,
+    // el plugin de Laravel lo establece en true por defecto.
+    // Dejaremos la 'base' por ahora, ya que es útil.
+    base: '/build/',
+    // Las secciones 'optimizeDeps' y 'server' solo afectan al servidor de desarrollo (npm run dev)
+    // y no al proceso de 'build' para producción.
 });
