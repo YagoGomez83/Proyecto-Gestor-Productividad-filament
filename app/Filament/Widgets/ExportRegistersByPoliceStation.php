@@ -144,7 +144,7 @@ class ExportRegistersByPoliceStation extends BaseWidget
             ])
             ->actions([
                 Tables\Actions\Action::make('Ver Detalles')
-                    ->url(fn(PoliceStation $record): string => route('filament.reception.resources.sismo-registers.index', [
+                    ->url(fn(PoliceStation $record): string => route('filament.admin.resources.services.index', [
                         'tableFilters' => [
                             'police_station_id' => [
                                 'value' => $record->id,

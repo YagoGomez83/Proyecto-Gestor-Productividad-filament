@@ -118,7 +118,7 @@
 
                 </div>
                 <div class="w-1/3">
-                    <label for="accuseds" class="block text-gray-700 font-bold uppercase">Acusados</label>
+                    <label for="accuseds" class="block text-gray-700 font-bold uppercase">Sospechosos</label>
                     <select name="accuseds[]" id="accuseds" class="w-full border-gray-400 rounded-md p-2 border bg-white"
                         multiple>
                         @foreach ($accuseds as $accused)
@@ -129,7 +129,7 @@
 
                 </div>
                 <div class="w-1/3">
-                    <label for="vehicles" class="block text-gray-700 font-bold uppercase">Acusados</label>
+                    <label for="vehicles" class="block text-gray-700 font-bold uppercase">Vehículos involucrados</label>
                     <select name="vehicles[]" id="vehicles" class="w-full border-gray-400 rounded-md p-2 border bg-white"
                         multiple>
                         @foreach ($vehicles as $vehicle)

@@ -135,7 +135,7 @@ class CameraResource extends Resource
             ->actions([
                 Action::make('editWithLocation')
                     ->label('Editar')
-                    ->url(fn($record) => route('camera.edit', $record->id))
+                    ->url(fn($record) => route('camera.editar', $record->id))
                     ->icon('heroicon-o-pencil'),
 
             ])
