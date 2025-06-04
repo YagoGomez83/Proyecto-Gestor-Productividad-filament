@@ -6,6 +6,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\HeatmapController;
 use App\Http\Controllers\CameraHeatmapController;
 use App\Http\Controllers\ServiceHeatmapController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 // Route::view('/', 'public.index')->name('welcome');
 
@@ -25,6 +26,10 @@ use App\Http\Controllers\ServiceHeatmapController;
 Route::get('/', function () {
     return view('public.home');
 })->name('home');
+
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+            ->middleware('auth') // Solo usuarios autenticados pueden intentar cerrar sesión
+            ->name('logout'); // El nombre que usaste en tu vista Blade
 
 Route::middleware(['auth', 'role:coordinator|supervisor'])->group(function () {
     Route::get('/admin/cameras/custom', [CameraController::class, 'index'])->name('cameras.custom');

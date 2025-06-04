@@ -5,7 +5,8 @@ import L from 'leaflet';
 import 'leaflet.heat';
 import Chart from 'chart.js/auto';
 import 'leaflet/dist/leaflet.css';
-
+import 'leaflet-control-geocoder/dist/Control.Geocoder.css'; // Importa el CSS del geocodificador
+import 'leaflet-control-geocoder';
 // Exportar Leaflet y Chart.js al scope global
 window.L = L;
 window.Leaflet = L;
