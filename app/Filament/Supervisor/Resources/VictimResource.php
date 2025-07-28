@@ -29,11 +29,11 @@ class VictimResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('lastName')
-                    ->label('Apellido')
+                    ->label('Tipo')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('dni')
-                    ->label('DNI')
+                    ->label('Dirección')
                     ->maxLength(255),
 
                 //
@@ -48,10 +48,10 @@ class VictimResource extends Resource
                     ->label('Nombre')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('lastName')
-                    ->label('Apellido')
+                    ->label('Tipo')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('dni')
-                    ->label('DNI')
+                    ->label('Dirección')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

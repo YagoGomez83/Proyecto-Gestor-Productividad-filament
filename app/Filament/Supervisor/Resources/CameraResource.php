@@ -56,6 +56,7 @@ class CameraResource extends Resource
                 Tables\Columns\TextColumn::make('city.name')
                     ->label('Ciudad')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('policeStation.name')
                     ->numeric()
